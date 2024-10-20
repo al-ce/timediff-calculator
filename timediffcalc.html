@@ -20,6 +20,183 @@
     html {
       zoom: 150%;
     }
+
+    body {
+      background-color: var(--bg);
+      text-align: center;
+    }
+
+    button {
+      background-color: var(--white);
+      border-radius: 24px;
+      border-style: none;
+      box-shadow: var(--shadows);
+      color: var(--steelgray);
+      cursor: pointer;
+      padding: 0px 8px;
+      position: relative;
+    }
+
+    button:hover {
+      background: #F6F9FE;
+      color: var(--peacock);
+      max-height: 24px;
+    }
+
+    input {
+      border-radius: 4px;
+    }
+
+    table {
+      box-shadow: var(--shadows);
+      table-layout: fixed;
+      width: 100%;
+      max-width: 360px;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 2px solid black;
+      border-radius: 4px;
+      border-top-right-radius: 0px;
+      border-top-left-radius: 0px;
+    }
+
+    caption,
+    thead,
+    tfoot {
+      background-color: var(--peacock);
+      color: var(--white);
+      font-weight: bold;
+    }
+
+    caption {
+      border: 2px solid black;
+      border-bottom: 0px;
+      border-radius: 4px;
+      border-bottom-right-radius: 0px;
+      border-bottom-left-radius: 0px;
+      padding: 8px;
+    }
+
+    tfoot {
+      style border-top: 3px dotted rgb(160 160 160);
+    }
+
+    /* Delete button header cell */
+    thead th:nth-child(1) {
+      width: 8%;
+    }
+
+    /* Subtotal header cell */
+    thead th:nth-child(4) {
+      width: 22%;
+    }
+
+    th,
+    td {
+      padding: 8px;
+    }
+
+    tbody {
+      border: 1px solid black;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: var(--mistygray);
+    }
+
+    ul li {
+      padding: 2px;
+    }
+
+    .adjusted {
+      font-style: italic;
+    }
+
+    .alerts {
+      background-color: var(--mistygray);
+    }
+
+    .crossDay {
+      font-weight: bolder;
+    }
+
+    .content {
+      max-width: 900px;
+      padding-top: 20px;
+      display: flex;
+      flex-flow: row wrap;
+      column-gap: 40px;
+      align-items: flex-start;
+      justify-content: space-evenly;
+    }
+
+    .calculator {}
+
+    .firstCol {
+      width: 275px;
+    }
+
+    .options,
+    .usage {
+      text-align: left;
+      border: 2px solid black;
+      box-shadow: var(--shadows);
+    }
+
+    .optionsHeader,
+    .usageHeader {
+      padding: 4px;
+      text-align: center;
+      background-color: var(--peacock);
+      color: var(--white);
+      font-weight: bold;
+    }
+
+    .optionsContent,
+    .usageContent {
+      margin-right: 8px;
+    }
+
+    .optionsCheckbox {
+      margin-right: 8px;
+      margin-bottom: 4px;
+    }
+
+    .optionsCheckbox:hover input {
+      cursor: pointer;
+    }
+
+    .usageContent {
+      font-size: smaller;
+    }
+
+    .varInputsContainer {
+      display: flex;
+      flex-flow: column wrap;
+      align-items: flex-end;
+      padding-right: 8px;
+      padding-bottom: 8px;
+    }
+
+    .breaksVar {
+      font-weight: bolder;
+      color: var(--tigerorange);
+    }
+
+    .varInput {
+      width: 50px;
+    }
+
+    .key {
+      background-color: var(--blue);
+      color: var(--white);
+      width: 8px;
+      height: 4px;
+      border: 1px solid var(--black);
+      border-radius: 6px;
+      padding: 2px;
+
+    }
   </style>
   <title></title>
 </head>
