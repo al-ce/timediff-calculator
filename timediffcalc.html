@@ -202,15 +202,40 @@
 </head>
 <body>
   <script>
-    const title = "Time Diff Calculator";
-    document.title = title;
 
+    /* ------------------------------------------------------------------------
+    / Globals
+    */
     const state = {
       calculateCrossDay: false,
       adjustPerHour: false,
     };
 
     const times = {};
+
+    /* ------------------------------------------------------------------------
+    / Helpers
+    */
+    function getById(id) {
+      return document.getElementById(id)
+    }
+
+    function zeroPad(num) {
+      return num.toFixed(2)
+    }
+
+    function dateObjToFraction(dateObj) {
+      const mm = Math.floor(dateObj / 1000 / 60) % 60;
+      const hh = Math.floor(dateObj / 1000 / 60 / 60);
+      const fractionalTime = hh + mm / 60;
+      return Math.round(fractionalTime * 100) / 100;
+    }
+
+    /* ------------------------------------------------------------------------
+    / On Load
+    */
+    const title = "Time Diff Calculator";
+    document.title = title;
 
   </script>
   <div class="content">
