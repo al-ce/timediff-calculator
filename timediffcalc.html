@@ -218,15 +218,28 @@
     /* ------------------------------------------------------------------------
     / Helpers
     */
+
+    /**
+    * Shorthand for getting element by id
+    * @param {String} id Element id
+    **/
     function getById(id) {
       return document.getElementById(id)
     }
 
-    function zeroPad(num) {
+    /**
+    * Pad or truncate a number to two decimal places
+    * @param {Number} num A Number object
+    **/
+    function twoPad(num) {
       return num.toFixed(2)
     }
 
-    function dateObjToFraction(dateObj) {
+    /**
+    * Transform a Date object into a number truncated to two decimal places
+    * @param {Date} dateObj A Date object
+    **/
+    function dateToFraction(dateObj) {
       const mm = Math.floor(dateObj / 1000 / 60) % 60;
       const hh = Math.floor(dateObj / 1000 / 60 / 60);
       const fractionalTime = hh + mm / 60;
