@@ -252,7 +252,7 @@
     document.title = title;
 
     function onLoad() {
-
+      getById("calcCaption").innerText = title;
     }
 
     document.body.onload = onLoad;
@@ -310,9 +310,7 @@
     <div class="secondCol">
       <div class="calculator">
         <table>
-          <caption id="calcCaption">
-            Time Diff Calculator
-          </caption>
+          <caption id="calcCaption"></caption>
           <thead>
             <tr>
               <th></th>
