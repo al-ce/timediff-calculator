@@ -28,5 +28,80 @@
     const title = "Time Diff Calculator";
     document.title = title;
   </script>
+  <div class="content">
+    <div class="firstCol">
+      <div class="options">
+        <div class="optionsHeader">
+          Options
+        </div>
+        <div class="optionsContent">
+          <div class="optionsCheckbox">
+            <input type="checkbox" id="crossDayCheck" name="crossDayCheck" value="crossDayCheck"> <label for="crossDayCheck">Calculate across midnight</label><br>
+          </div>
+          <div class="optionsCheckbox">
+            <input type="checkbox" id="breaksCheck" name="breaksCheck" value="breaksCheck"> <label for="breaksCheck">Adjust by <em class="breaksVar">x</em> for every <em class="breaksVar">y</em> hours</label><br>
+          </div>
+          <div class="varInputsContainer">
+            <div class="varInputsRow">
+              where <em class="breaksVar">x</em> = <input type="number" value="-0.5" class="varInput" id="varX">
+            </div>
+            <div class="varInputsRow">
+              and <em class="breaksVar">y</em> = <input type="number" value="6" class="varInput" id="varY">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="usage">
+        <div class="usageHeader">
+          Usage
+        </div>
+        <ul class="usageContent">
+          <li>Type e.g. "1345" to enter 01:45 PM etc.</li>
+          <li>New rows are automatically added as needed</li>
+          <p>Keymap:</p>
+          <li><span class="key">Tab</span> or <span class="key">"Shift+Tab"</span> move the focus left or right</li>
+          <li><span class="key">y</span> to yank (copy) the total to the system clipboard</li>
+          <li><span class="key">Y</span> to copy all complete rows as a TSV table to the system clipboard</li>
+          <li><span class="key">c</span> to clear the current input field</li>
+          <li><span class="key">d</span> to delete the current row</li>
+          <li><span class="key">o</span> to create a new row</li>
+          <li><span class="key">J</span> or <span class="key">K</span> to move down or up rows</li>
+          <li><span class="key">H</span> or <span class="key">L</span> to move left or right in a row</li>
+          <li><span class="key">g</span> or <span class="key">G</span> to focus the first or last row</li>
+          <li><span class="key">j</span> or <span class="key">k</span> to increase/decrease minutes</li>
+          <li><span class="key">h</span> or <span class="key">l</span> to increase/decrease hours</li>
+          <li><span class="key">x</span> to toggle AM/PM</li>
+          <li><span class="key">M</span> to toggle post-midnight calculations</li>
+          <li><span class="key">A</span> to toggle adjustment calculations</li>
+        </ul>
+      </div>
+    </div>
+    <div class="secondCol">
+      <div class="calculator">
+        <table>
+          <caption id="calcCaption">
+            Time Diff Calculator
+          </caption>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="calcRows"></tbody>
+          <tfoot>
+            <tr>
+              <th id="resetDiv"><button class="resetButton" tabindex="-1">↺</button></th>
+              <th></th>
+              <th>Total:</th>
+              <th id="totalDiv"></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
