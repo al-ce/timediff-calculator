@@ -223,16 +223,18 @@
     */
 
     /**
-    * Shorthand for getting element by id
-    * @param {String} id Element id
+    * Shorthand for getting an HTMLElement by id
+    * @param {string} id Element id
+    * @returns {HTMLElement}
     **/
-    function getById(id) {
+    function idGet(id) {
       return document.getElementById(id)
     }
 
     /**
     * Pad or truncate a number to two decimal places
-    * @param {Number} num A Number object
+    * @param {number} num A Number object
+    * @return {number}
     **/
     function twoPad(num) {
       return num.toFixed(2)
@@ -241,6 +243,7 @@
     /**
     * Transform a Date object into a number truncated to two decimal places
     * @param {Date} dateObj A Date object
+    * @return {number}
     **/
     function dateToFraction(dateObj) {
       const mm = Math.floor(dateObj / 1000 / 60) % 60;
@@ -255,7 +258,7 @@
     document.title = title;
 
     function onLoad() {
-      getById("calcCaption").innerText = title;
+      idGet("calcCaption").innerText = title;
     }
 
     document.body.onload = onLoad;
