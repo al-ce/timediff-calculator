@@ -283,13 +283,44 @@
     }
 
     /* ------------------------------------------------------------------------
+    / Main functionality
+    */
+
+    /**
+    * Add a new row to the `timeRows` table.
+    **/
+    function addNewTimeRow() {
+
+      /** @type {TimeRow} */
+      const newRow = document.createElement("tr");
+      /** @type {HTMLTableCellElement} */
+      const subtotalEl = document.createElement("td");
+
+      /** @type number */
+      const idx = timeRows.size + 1;
+
+      timeRows.set(idx, newRow);
+      newRow.id = `row${idx}`;
+
+      subtotalEl.id = `subtotal${idx}`
+      subtotalEl.innerText = "---";
+
+      newRow.append(subtotalEl);
+
+      idGet("timeRows").append(newRow);
+    }
+
+    /* ------------------------------------------------------------------------
     / On Load
     */
     document.title = title;
 
     function onLoad() {
       idGet("calcCaption").innerText = title;
+
       uncheckInputElements();
+
+      addNewTimeRow();
     }
 
     document.body.onload = onLoad;
@@ -356,7 +387,7 @@
               <th>Subtotal</th>
             </tr>
           </thead>
-          <tbody id="calcRows"></tbody>
+          <tbody id="timeRows"></tbody>
           <tfoot>
             <tr>
               <th id="resetDiv"><button class="resetButton" tabindex="-1">↺</button></th>
