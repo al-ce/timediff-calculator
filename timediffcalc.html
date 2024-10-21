@@ -222,10 +222,11 @@
 
 
     /**
-     * @typedef {HTMLTableRowElement} TimeRow
-     * @property {HTMLTableCellElement} deleteButtonCell - Cell containing the delete button
-     * @property {HTMLInputElement} startTimeInput - Input element for start time
-     * @property {HTMLInputElement} endTimeInput - Input element for end time
+     * @typedef {Object} TimeRow
+     * @property {HTMLTableRowElement} timeRow - Row in the timeRows HTML table
+     * @property {HTMLTableCellElement} deleteCell - Cell containing the delete button
+     * @property {HTMLInputElement} startCell - Input element for start time
+     * @property {HTMLInputElement} endCell - Input element for end time
      * @property {HTMLTableCellElement} subtotalCell - Cell displaying the time difference
      */
 
@@ -318,7 +319,7 @@
       /** @type number */
       const idx = timeRows.size + 1;
       /** @type {TimeRow} */
-      const newRow = document.createElement("tr");
+      const timeRow = document.createElement("tr");
       /** @type {HTMLTableCellElement} */
       const deleteCell = document.createElement("button");
       /** @type {HTMLTableCellElement} */
@@ -328,15 +329,18 @@
       /** @type {HTMLTableCellElement} */
       const subtotalCell = document.createElement("td");
 
-      timeRows.set(idx, newRow);
-      newRow.id = `row${idx}`;
+      timeRows.set(idx, {
+        timeRow,
+        deleteCell, startCell, endCell, subtotalCell,
+      });
+      timeRow.id = `row${idx}`;
 
       subtotalCell.id = `subtotal${idx}`
       subtotalCell.innerText = "---";
 
-      newRow.append(deleteCell, startCell, endCell, subtotalCell);
+      timeRow.append(deleteCell, startCell, endCell, subtotalCell);
 
-      idGet("timeRows").append(newRow);
+      idGet("timeRows").append(timeRow);
     }
 
     /* ------------------------------------------------------------------------
