@@ -208,15 +208,35 @@
     */
     const title = "Time Diff Calculator";
 
+    /**
+    * @typedef {Object} State
+    * @property {boolean} calculateCrossDay - Allow calculations past midnight
+    * @property {boolean} adjustPerHour - Adjust calculations by x per y hours
+    */
+
+    /** @type {State} */
     const state = {
       calculateCrossDay: false,
       adjustPerHour: false,
     };
 
-    const rows = {
-      length: 0,
-      times: {},
-    };
+
+    /**
+     * @typedef {HTMLTableRowElement} TimeRow
+     * @property {HTMLTableCellElement} deleteButtonCell - Cell containing the delete button
+     * @property {HTMLInputElement} startTimeInput - Input element for start time
+     * @property {HTMLInputElement} endTimeInput - Input element for end time
+     * @property {HTMLTableCellElement} subtotalCell - Cell displaying the time difference
+     */
+
+    /**
+     * @typedef {Map<number, TimeRow>} TimeRows
+     * @description
+     * A Map of numerical indices as keys and TimeRow Objects as values
+     */
+
+    /** @type {TimeRows} */
+    const TimeRows = {};
 
     /* ------------------------------------------------------------------------
     / Helpers
