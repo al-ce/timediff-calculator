@@ -272,6 +272,16 @@
       return Math.round(fractionalTime * 100) / 100;
     }
 
+    /**
+    * Uncheck all HTML input elements.
+    **/
+    function uncheckInputElements() {
+      const inputs = document.getElementsByTagName("input");
+      for (let i = 0; i < inputs.length; i++) {
+        inputs[i].checked = false;
+      }
+    }
+
     /* ------------------------------------------------------------------------
     / On Load
     */
@@ -279,6 +289,7 @@
 
     function onLoad() {
       idGet("calcCaption").innerText = title;
+      uncheckInputElements();
     }
 
     document.body.onload = onLoad;
