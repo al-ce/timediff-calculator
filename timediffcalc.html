@@ -405,11 +405,44 @@
     }
 
     /* ------------------------------------------------------------------------
+    / Vim-like bindings
+    */
+    class Vim {
+      /**
+      * Create object for adding Vim like keybinds for the page
+      * @class
+      */
+      constructor() {
+        this.keys = {
+          newRow: "o",
+        }
+      }
+
+      /**
+      * Create a new timeRow
+      * @param key? Optional `newRow` override
+      */
+      newRow(key) {
+        key = key ? key : this.keys.newRow;
+        document.addEventListener("keydown", (e) => {
+          if (e.key == key) {
+            addNewTimeRow();
+          }
+        })
+      }
+    }
+
+
+    /* ------------------------------------------------------------------------
     / On Load
     */
     document.title = title;
 
     function onLoad() {
+
+      const vim = new Vim();
+      vim.newRow();
+
       idGet("calcCaption").innerText = title;
 
       uncheckInputElements();
