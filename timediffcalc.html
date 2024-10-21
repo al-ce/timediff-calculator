@@ -300,7 +300,8 @@
       /** @type {HTMLInputElement} */
       const input = document.createElement("input");
 
-      input.id = `${name}{rowNum}`;
+      cell.id = `${name}Cell${rowNum}`;
+      input.id = `${name}Input${rowNum}`;
       input.type = "time";
       input.value = "09:00";
 
@@ -319,7 +320,7 @@
     function createSubtotalCell(idx) {
       /** @type {HTMLTableCellElement} */
       const subtotalCell = document.createElement("td");
-      subtotalCell.id = `subtotal${idx}`;
+      subtotalCell.id = `subtotalCell${idx}`;
       subtotalCell.innerText = subtotalDefault;
       return subtotalCell;
     }
