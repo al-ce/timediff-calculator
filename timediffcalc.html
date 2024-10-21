@@ -207,6 +207,7 @@
     / Globals
     */
     const title = "Time Diff Calculator";
+    const subtotalDefault = "---"
 
     /**
     * @typedef {Object} State
@@ -294,7 +295,6 @@
     * @returns {HTMLTableCellElement}
     **/
     function createTimeInputCell(name, idx) {
-
       /** @type {HTMLTableCellElement} */
       const cell = document.createElement("td");
       /** @type {HTMLInputElement} */
@@ -312,10 +312,22 @@
     }
 
     /**
+    * Create a table cell that contains the timeRow's time difference (subtotal)
+    * @param {number} idx Index used for the cell's id
+    * @returns {HTMLTableCellElement}
+    **/
+    function createSubtotalCell(idx) {
+      /** @type {HTMLTableCellElement} */
+      const subtotalCell = document.createElement("td");
+      subtotalCell.id = `subtotal${idx}`;
+      subtotalCell.innerText = subtotalDefault;
+      return subtotalCell;
+    }
+
+    /**
     * Add a new row to the `timeRows` table.
     **/
     function addNewTimeRow() {
-
       /** @type number */
       const idx = timeRows.size + 1;
       /** @type {TimeRow} */
@@ -327,16 +339,13 @@
       /** @type {HTMLTableCellElement} */
       const endCell = createTimeInputCell("end", idx);
       /** @type {HTMLTableCellElement} */
-      const subtotalCell = document.createElement("td");
+      const subtotalCell = createSubtotalCell(idx);
 
       timeRows.set(idx, {
         timeRow,
         deleteCell, startCell, endCell, subtotalCell,
       });
       timeRow.id = `row${idx}`;
-
-      subtotalCell.id = `subtotal${idx}`
-      subtotalCell.innerText = "---";
 
       timeRow.append(deleteCell, startCell, endCell, subtotalCell);
 
