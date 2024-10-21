@@ -300,8 +300,8 @@
       /** @type {HTMLInputElement} */
       const input = document.createElement("input");
 
-      cell.id = `${name}Cell${rowNum}`;
-      input.id = `${name}Input${rowNum}`;
+      cell.id = `${name}Cell${idx}`;
+      input.id = `${name}Input${idx}`;
       input.type = "time";
       input.value = "09:00";
 
@@ -326,6 +326,30 @@
     }
 
     /**
+    * Create a table cell that contains a button to delete the timeRow
+    * @param {number} idx Index used for the cell's id
+    * @returns {HTMLTableCellElement}
+    **/
+    function createDeleteCell(idx) {
+      /** @type {HTMLTableCellElement} */
+      const cell = document.createElement("td");
+      /** @type {HTMLButtonElement} */
+      const button = document.createElement("button");
+
+      cell.id = `deleteCell${idx}`;
+      button.id = `deleteButton${idx}`;
+      button.innerText = subtotalDefault;
+      button.innerText = "🗑 ";
+      button.setAttribute("tabindex", "-1");
+      button.addEventListener("click", (e) => {
+        // TODO
+      });
+
+      cell.append(button)
+      return cell;
+    }
+
+    /**
     * Add a new row to the `timeRows` table.
     **/
     function addNewTimeRow() {
@@ -334,7 +358,7 @@
       /** @type {TimeRow} */
       const timeRow = document.createElement("tr");
       /** @type {HTMLTableCellElement} */
-      const deleteCell = document.createElement("button");
+      const deleteCell = createDeleteCell();
       /** @type {HTMLTableCellElement} */
       const startCell = createTimeInputCell("start", idx);
       /** @type {HTMLTableCellElement} */
