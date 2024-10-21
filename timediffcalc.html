@@ -287,25 +287,54 @@
     */
 
     /**
+    * Create table cell that contains an input[type="time"] element.
+    * @param {('start'|'end')} name Name used for the input element's id
+    * @param {number} idx Index used for the input element's id
+    * @returns {HTMLTableCellElement}
+    **/
+    function createTimeInputCell(name, idx) {
+
+      /** @type {HTMLTableCellElement} */
+      const cell = document.createElement("td");
+      /** @type {HTMLInputElement} */
+      const input = document.createElement("input");
+
+      input.id = `${name}{rowNum}`;
+      input.type = "time";
+      input.value = "09:00";
+
+      input.oninput = function () {
+      };
+
+      cell.append(input);
+      return cell;
+    }
+
+    /**
     * Add a new row to the `timeRows` table.
     **/
     function addNewTimeRow() {
 
+      /** @type number */
+      const idx = timeRows.size + 1;
       /** @type {TimeRow} */
       const newRow = document.createElement("tr");
       /** @type {HTMLTableCellElement} */
-      const subtotalEl = document.createElement("td");
-
-      /** @type number */
-      const idx = timeRows.size + 1;
+      const deleteCell = document.createElement("button");
+      /** @type {HTMLTableCellElement} */
+      const startCell = createTimeInputCell("start", idx);
+      /** @type {HTMLTableCellElement} */
+      const endCell = createTimeInputCell("end", idx);
+      /** @type {HTMLTableCellElement} */
+      const subtotalCell = document.createElement("td");
 
       timeRows.set(idx, newRow);
       newRow.id = `row${idx}`;
 
-      subtotalEl.id = `subtotal${idx}`
-      subtotalEl.innerText = "---";
+      subtotalCell.id = `subtotal${idx}`
+      subtotalCell.innerText = "---";
 
-      newRow.append(subtotalEl);
+      newRow.append(deleteCell, startCell, endCell, subtotalCell);
 
       idGet("timeRows").append(newRow);
     }
