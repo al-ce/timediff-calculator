@@ -238,7 +238,7 @@
      */
 
     /** @type {TimeRows} */
-    const timeRows = new Map();
+    let timeRows = new Map();
 
     /* ------------------------------------------------------------------------
     / Helpers
@@ -287,6 +287,33 @@
     /* ------------------------------------------------------------------------
     / Main functionality
     */
+
+    /**
+    * Reset the HTML timeRows table and the timeRows Object.
+    **/
+    function reset() {
+      idGet("timeRows").replaceChildren([]);
+      timeRows = new Map();
+      addNewTimeRow();
+      //TODO: Update total
+    }
+
+    /**
+    * Delete a row from the timeRows HTML table and the timeRows Object.
+    * @param {number} idx Index to identify the timeRow
+    **/
+    function deleteTimeRow(idx) {
+      const timeRows = idGet("timeRows");
+      const row = idGet(`row${idx}`);
+
+      row.remove();
+
+      // TODO: update total
+
+      if (timeRows.children.length == 0) {
+        reset();
+      }
+    }
 
     /**
     * Create table cell that contains an input[type="time"] element.
@@ -342,7 +369,7 @@
       button.innerText = "🗑 ";
       button.setAttribute("tabindex", "-1");
       button.addEventListener("click", (e) => {
-        // TODO
+        deleteTimeRow(idx);
       });
 
       cell.append(button)
@@ -358,7 +385,7 @@
       /** @type {TimeRow} */
       const timeRow = document.createElement("tr");
       /** @type {HTMLTableCellElement} */
-      const deleteCell = createDeleteCell();
+      const deleteCell = createDeleteCell(idx);
       /** @type {HTMLTableCellElement} */
       const startCell = createTimeInputCell("start", idx);
       /** @type {HTMLTableCellElement} */
