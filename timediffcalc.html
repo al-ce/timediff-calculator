@@ -286,6 +286,27 @@
       return Math.round(fractionalTime * 100) / 100;
     }
 
+
+    /**
+    * Focus either the previous input cell in the timeRows Map given a start 
+    * index, or the first if one is not specified.
+    * @param {start?} number An optional start index
+    * @return {number}
+    **/
+    function focusPrevInput(start) {
+      let keys = Array.from(timeRows.keys());
+      start = start == null ? keys.length : start;
+      let startInputElement;
+      for (; start > 0; start--) {
+        startInputElement = idGet(`startInput${start}`);
+        if (startInputElement !== null) {
+          break;
+        }
+      }
+      // FIX: does not focus first row after first row is deleted
+      startInputElement.focus();
+    }
+
     /**
     * Uncheck all HTML input elements.
     **/
@@ -345,14 +366,15 @@
     * @param {number} idx Index to identify the timeRow
     **/
     function deleteTimeRow(idx) {
-      const timeRows = idGet("timeRows");
+      const tableRows = idGet("timeRows");
       const row = idGet(`row${idx}`);
 
       row.remove();
+      timeRows.delete(idx);
 
       updateTotal();
 
-      if (timeRows.children.length == 0) {
+      if (tableRows.children.length == 0) {
         reset();
       }
     }
@@ -492,9 +514,10 @@
             const row = idGet(`row${idx}`);
             if (row !== undefined) {
               deleteTimeRow(idx);
+              focusPrevInput(idx);
             }
-          } catch {
-            console.log("warn: user tried to delete a table row without focusing one");
+          } catch (err) {
+            console.log(err)
           }
         })
       }
