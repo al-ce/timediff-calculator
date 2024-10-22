@@ -237,7 +237,6 @@
     */
     function createTimeRow() {
       return {
-        timeRow: timeRow,
         startTime: new Date(`${defaultDate}T${defaultTime}Z`),
         endTime: new Date(`${defaultDate}T${defaultTime}Z`),
         diff: 0,
@@ -317,13 +316,28 @@
     }
 
     /**
+    * Update the total cell in the table to reflect the current totals.
+    **/
+    function updateTotal() {
+      let total = 0;
+      timeRows.forEach((v, k) => {
+        total += v.diff
+      });
+
+      let fractional = dateToFraction(total);
+      fractinal = twoPad(fractional);
+
+      idGet("totalDiv").innerText = fractional;
+    }
+
+    /**
     * Reset the HTML timeRows table and the timeRows Object.
     **/
     function reset() {
       idGet("timeRows").replaceChildren([]);
       timeRows = new Map();
       addNewTimeRow();
-      //TODO: Update total
+      updateTotal();
     }
 
     /**
@@ -336,7 +350,7 @@
 
       row.remove();
 
-      // TODO: update total
+      updateTotal();
 
       if (timeRows.children.length == 0) {
         reset();
@@ -362,6 +376,7 @@
 
       input.oninput = function () {
         updateTimeDiff(name, idx);
+        updateTotal();
       };
 
       cell.append(input);
