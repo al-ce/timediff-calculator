@@ -116,10 +116,6 @@
       background-color: var(--mistygray);
     }
 
-    .crossDay {
-      font-weight: bolder;
-    }
-
     .content {
       max-width: 900px;
       padding-top: 20px;
@@ -213,13 +209,11 @@
 
     /**
     * @typedef {Object} State
-    * @property {boolean} calculateCrossDay - Allow calculations past midnight
     * @property {boolean} adjustPerHour - Adjust calculations by x per y hours
     */
 
     /** @type {State} */
     const state = {
-      calculateCrossDay: false,
       adjustPerHour: false,
     };
 
@@ -612,9 +606,6 @@
         </div>
         <div class="optionsContent">
           <div class="optionsCheckbox">
-            <input type="checkbox" id="crossDayCheck" name="crossDayCheck" value="crossDayCheck"> <label for="crossDayCheck">Calculate across midnight</label><br>
-          </div>
-          <div class="optionsCheckbox">
             <input type="checkbox" id="breaksCheck" name="breaksCheck" value="breaksCheck"> <label for="breaksCheck">Adjust by <em class="breaksVar">x</em> for every <em class="breaksVar">y</em> hours</label><br>
           </div>
           <div class="varInputsContainer">
@@ -647,7 +638,6 @@
           <li><span class="key">j</span> or <span class="key">k</span> to increase/decrease minutes</li>
           <li><span class="key">h</span> or <span class="key">l</span> to increase/decrease hours</li>
           <li><span class="key">x</span> to toggle AM/PM</li>
-          <li><span class="key">M</span> to toggle post-midnight calculations</li>
           <li><span class="key">A</span> to toggle adjustment calculations</li>
         </ul>
       </div>
