@@ -232,6 +232,19 @@
      */
 
     /**
+    * Creates a new TimeRow Object
+    * @return {TimeRow}
+    */
+    function createTimeRow() {
+      return {
+        timeRow: timeRow,
+        startTime: new Date(`${defaultDate}T${defaultTime}Z`),
+        endTime: new Date(`${defaultDate}T${defaultTime}Z`),
+        diff: 0,
+      }
+    }
+
+    /**
      * @typedef {Map<number, TimeRow>} TimeRows
      * @description
      * A Map of numerical indices as keys and TimeRow Objects as values
@@ -396,28 +409,20 @@
     * Add a new row to the `timeRows` table.
     **/
     function addNewTimeRow() {
-      /** @type number */
       const idx = timeRows.size + 1;
-      /** @type {TimeRow} */
-      const timeRow = document.createElement("tr");
+      const tableRow = document.createElement("tr");
 
       const deleteCell = createDeleteCell(idx);
       const startCell = createTimeInputCell("start", idx);
       const endCell = createTimeInputCell("end", idx);
       const subtotalCell = createSubtotalCell(idx);
 
-      timeRows.set(idx, {
-        timeRow: timeRow,
-        startTime: new Date(`${defaultDate}T${defaultTime}Z`),
-        endTime: new Date(`${defaultDate}T${defaultTime}Z`),
-        diff: 0,
-      });
+      tableRow.id = `row${idx}`;
+      tableRow.append(deleteCell, startCell, endCell, subtotalCell);
 
-      timeRow.id = `row${idx}`;
+      idGet("timeRows").append(tableRow);
 
-      timeRow.append(deleteCell, startCell, endCell, subtotalCell);
-
-      idGet("timeRows").append(timeRow);
+      timeRows.set(idx, createTimeRow());
     }
 
     /* ------------------------------------------------------------------------
