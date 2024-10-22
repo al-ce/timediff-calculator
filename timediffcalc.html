@@ -395,6 +395,7 @@
       input.id = `${name}Input${idx}`;
       input.type = "time";
       input.value = "09:00";
+      input.classList.add("timeInput")
 
       input.oninput = function () {
         updateTimeDiff(name, idx);
@@ -483,6 +484,7 @@
       keymapSet() {
         this.newRow();
         this.deleteRow();
+        this.adjustTime();
       }
 
       /**
@@ -518,6 +520,44 @@
             }
           } catch (err) {
             console.log(err)
+          }
+        })
+      }
+
+      /**
+      * Adjust time with jk  (minutes) hl (hours) or x (AM/PM toggle)
+      */
+      adjustTime() {
+        document.addEventListener("keydown", (e) => {
+          if (!e.altKey && "hjklx".includes(e.key)) {
+            let currNode = document.activeElement;
+            if (!currNode || !currNode.classList.contains("timeInput")) {
+              return;
+            }
+
+            switch (e.key) {
+              case "h":
+                currNode.stepDown(60);
+                break;
+              case "j":
+                currNode.stepDown(1);
+                break;
+              case "k":
+                currNode.stepUp(1);
+                break;
+              case "l":
+                currNode.stepUp(60);
+                break;
+              case "x":
+                const hh = currNode.value.match(/(\d+)/)[1];
+                let step = Number(hh) < 12 ? 720 : -720;
+                currNode.stepUp(step);
+                break;
+            }
+
+            const event = new Event("input");
+            currNode.dispatchEvent(event);
+
           }
         })
       }
