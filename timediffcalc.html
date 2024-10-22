@@ -226,9 +226,12 @@
      * @typedef {Object} TimeRow
      * @property {HTMLTableRowElement} timeRow - Row in the timeRows HTML table
      * @property {HTMLTableCellElement} deleteCell - Cell containing the delete button
-     * @property {HTMLInputElement} startCell - Input element for start time
-     * @property {HTMLInputElement} endCell - Input element for end time
+     * @property {HTMLInputElement} startCell - Table cell for the start time
+     * @property {HTMLInputElement} startInput - Input element for start time
+     * @property {HTMLInputElement} endCell - Table cell for the end time
+     * @property {HTMLInputElement} endInput - Input element for end time
      * @property {HTMLTableCellElement} subtotalCell - Cell displaying the time difference
+     * @property {number} diff - Difference between startInput.value and endInput.value
      */
 
     /**
@@ -388,14 +391,18 @@
       const deleteCell = createDeleteCell(idx);
       /** @type {HTMLTableCellElement} */
       const startCell = createTimeInputCell("start", idx);
+      /** @type {HTMLInputElement} */
+      const startInput = idGet(`startInput${idx}`)
       /** @type {HTMLTableCellElement} */
       const endCell = createTimeInputCell("end", idx);
+      /** @type {HTMLInputElement} */
+      const endInput = idGet(`endInput${idx}`)
       /** @type {HTMLTableCellElement} */
       const subtotalCell = createSubtotalCell(idx);
 
       timeRows.set(idx, {
         timeRow,
-        deleteCell, startCell, endCell, subtotalCell,
+        deleteCell, startCell, startInput, endCell, endInput, subtotalCell,
       });
       timeRow.id = `row${idx}`;
 
