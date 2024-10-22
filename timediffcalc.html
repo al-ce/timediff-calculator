@@ -485,6 +485,7 @@
         this.newRow();
         this.deleteRow();
         this.adjustTime();
+        this.clear();
       }
 
       /**
@@ -520,6 +521,21 @@
             }
           } catch (err) {
             console.log(err)
+          }
+        })
+      }
+
+      /**
+       * Clear the focused input field with c
+       */
+      clear() {
+        document.addEventListener("keydown", (e) => {
+          if (e.key == "c") {
+
+            const currNode = document.activeElement;
+            currNode.value = "";
+            currNode.blur();
+            currNode.focus();
           }
         })
       }
