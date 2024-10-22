@@ -326,6 +326,12 @@
       const subtotalCell = idGet(`subtotalCell${idx}`)
       timeRow[`${name}Time`] = new Date(`${defaultDate}T${inputElement.value}Z`);
       timeRow.diff = timeRow.endTime - timeRow.startTime;
+
+      // Handle overflows past midnight
+      if (timeRow.endTime < timeRow.startTime) {
+        timeRow.diff += (24 * 60 * 60 * 1000)
+      }
+
       let fractionalTime = dateToFraction(timeRow.diff);
       subtotalCell.innerText = twoPad(fractionalTime);
     }
