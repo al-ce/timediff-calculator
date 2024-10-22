@@ -451,7 +451,16 @@
       constructor() {
         this.keys = {
           newRow: "o",
+          delete: "d",
         }
+      }
+
+      /**
+      * Set keybinds
+      */
+      keymapSet() {
+        this.newRow();
+        this.deleteRow();
       }
 
       /**
@@ -466,6 +475,29 @@
           }
         })
       }
+
+      /**
+      * Delete a time row
+      * @param key? Optional `newRow` override
+      */
+      deleteRow(key) {
+        key = key ? key : this.keys.delete;
+        document.addEventListener("keydown", (e) => {
+          if (e.key != key) {
+            return;
+          }
+          const currEl = document.activeElement.parentNode.parentNode;
+          try {
+            const idx = currEl.id.match(/row(\d+)/)[1];
+            const row = idGet(`row${idx}`);
+            if (row !== undefined) {
+              deleteTimeRow(idx);
+            }
+          } catch {
+            console.log("warn: user tried to delete a table row without focusing one");
+          }
+        })
+      }
     }
 
 
@@ -477,7 +509,7 @@
     function onLoad() {
 
       const vim = new Vim();
-      vim.newRow();
+      vim.keymapSet();
 
       idGet("calcCaption").innerText = title;
 
