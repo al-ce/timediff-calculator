@@ -539,6 +539,9 @@
       uncheckInputElements();
 
       addNewTimeRow();
+
+      // Focus first row on initial page load
+      idGet("startInput1").focus();
     }
 
     document.body.onload = onLoad;
