@@ -583,6 +583,7 @@
               let currNode = document.activeElement;
 
               if (!currNode || !currNode.classList.contains("timeInput")) {
+                // TODO:
                 findValidNode().focus();
                 return;
               }
@@ -614,12 +615,10 @@
                   break;
                 case "g":
                   rowIdx = keys.at(0).at(0);
-                  console.log("rowIdx g: " + rowIdx);
                   type = startType;
                   break;
                 case "G":
                   rowIdx = keys.at(-1).at(0);
-                  console.log("rowIdx g: " + rowIdx);
                   type = startType;
                   break;
               }
