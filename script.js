@@ -156,6 +156,7 @@ function reset() {
  * @param {number} idx Index to identify the timeRow
  **/
 function deleteTimeRow(idx) {
+  idx = Number(idx);
   const tableRows = idGet("timeRows");
   const row = idGet(`row${idx}`);
 
