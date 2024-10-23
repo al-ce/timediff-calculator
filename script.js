@@ -101,9 +101,10 @@ function focusPrevInput(start) {
     }
   }
 
-  // if (startInputElement === null) {
-  //   const keys = 
-  // }
+  if (startInputElement === null) {
+    const keys = getTimeRowKeys();
+    startInputElement = idGet(`startInput${keys.at(0)}`);
+  }
 
   startInputElement.focus();
 }
