@@ -16,8 +16,8 @@ const state = {
 
 /**
  * @typedef {Object} TimeRow
- * @property {number} startTime - Start time in milliseconds
- * @property {number} endTime - End time in milliseconds
+ * @property {number} startInput - Start time in milliseconds
+ * @property {number} endInput - End time in milliseconds
  * @property {number} diff - Difference between start and end times
  */
 
@@ -27,8 +27,8 @@ const state = {
  */
 function createTimeRow() {
   return {
-    startTime: new Date(`${defaultDate}T${defaultTime}Z`),
-    endTime: new Date(`${defaultDate}T${defaultTime}Z`),
+    startInput: new Date(`${defaultDate}T${defaultTime}Z`),
+    endInput: new Date(`${defaultDate}T${defaultTime}Z`),
     diff: 0,
   };
 }
@@ -41,6 +41,11 @@ function createTimeRow() {
 
 /** @type {TimeRows} */
 let timeRows = new Map();
+
+/** @typedef {Object} ParsedId
+ * @property {string} name - name from parsed id, e.g. "row" parsed from "row1"
+ * @property {number} idx - idx from parsed id, e.g. 1 parsed from "row1"
+ */
 
 // %% Helpers %%
 
@@ -75,40 +80,6 @@ function dateToFraction(dateObj) {
 }
 
 /**
- * Get an array of keys from the timeRow Map object's entries
- **/
-function getTimeRowKeys() {
-  const entries = Array.from(timeRows.entries());
-  return entries.map((el) => {
-    return Number(el.at(0));
-  });
-}
-
-/**
- * Focus either the previous input cell in the timeRows Map given a start
- * index, or the first if one is not specified.
- * @param {start?} number An optional start index
- * @return {number}
- **/
-function focusPrevInput(start) {
-  start = start == null ? keys.length : start;
-  let startInputElement;
-  for (; start > 0; start--) {
-    startInputElement = idGet(`startInput${start}`);
-    if (startInputElement !== null) {
-      break;
-    }
-  }
-
-  if (startInputElement === null) {
-    const keys = getTimeRowKeys();
-    startInputElement = idGet(`startInput${keys.at(0)}`);
-  }
-
-  startInputElement.focus();
-}
-
-/**
  * Uncheck all HTML input elements.
  **/
 function uncheckInputElements() {
@@ -116,6 +87,18 @@ function uncheckInputElements() {
   for (let i = 0; i < inputs.length; i++) {
     inputs[i].checked = false;
   }
+}
+
+/**
+ * Get an element's row index by parsing its id.
+ * @param {!string} id The id of an HTML element to parse.
+ * @return {ParsedId} name/idx pair parsed from id
+ **/
+function parseElementId(id) {
+  const matches = id.match(/([A-Za-z]+)(\d+)/);
+  const name = matches[1];
+  const idx = Number(matches[2]);
+  return { name, idx };
 }
 
 // %% Main functionality %%
@@ -127,13 +110,13 @@ function uncheckInputElements() {
  **/
 function updateTimeDiff(name, idx) {
   const timeRow = timeRows.get(idx);
-  const inputElement = idGet(`${name}Input${idx}`);
+  const inputElement = idGet(`${name}${idx}`);
   const subtotalCell = idGet(`subtotalCell${idx}`);
-  timeRow[`${name}Time`] = new Date(`${defaultDate}T${inputElement.value}Z`);
-  timeRow.diff = timeRow.endTime - timeRow.startTime;
+  timeRow[name] = new Date(`${defaultDate}T${inputElement.value}Z`);
+  timeRow.diff = timeRow.endInput - timeRow.startInput;
 
   // Handle overflows past midnight
-  if (timeRow.endTime < timeRow.startTime) {
+  if (timeRow.endInput < timeRow.startInput) {
     timeRow.diff += 24 * 60 * 60 * 1000;
   }
 
@@ -166,6 +149,38 @@ function reset() {
   updateTotal();
 }
 
+/** Renumber the id of each row and its relevant children sequentially from 1.
+ * Useful to keep a regular sequence of ids after deleting a row.
+ * Also renumbers the entry keys of the timeRows map.
+ **/
+function renumberRows() {
+  const tableRows = idGet("timeRows");
+  let currIdx;
+  let parsedRowId;
+  const toRename = [
+    "deleteCell",
+    "deleteButton",
+    "startCell",
+    "startInput",
+    "endCell",
+    "endInput",
+    "subtotalCell",
+  ];
+  let newIdx = 1;
+  let newTimeRows = new Map();
+  for (let row of tableRows.children) {
+    parsedRowId = parseElementId(row.id);
+    currIdx = parsedRowId.idx;
+    row.id = `row${newIdx}`;
+    toRename.map((name) => {
+      idGet(`${name}${currIdx}`).id = `${name}${newIdx}`;
+    });
+    newTimeRows.set(newIdx, timeRows.get(Number(currIdx)));
+    newIdx++;
+  }
+  timeRows = newTimeRows;
+}
+
 /**
  * Delete a row from the timeRows HTML table and the timeRows Object.
  * @param {number} idx Index to identify the timeRow
@@ -182,7 +197,14 @@ function deleteTimeRow(idx) {
 
   if (tableRows.children.length == 0) {
     reset();
+  } else {
+    renumberRows();
   }
+
+  // Always focus the next available row after deletion
+  const size = timeRows.size;
+  const targetIdx = size < idx + 1 ? size : idx;
+  idGet(`startInput${targetIdx}`).focus();
 }
 
 /**
@@ -204,7 +226,8 @@ function createTimeInputCell(name, idx) {
   input.classList.add("timeInput");
 
   input.oninput = function () {
-    updateTimeDiff(name, idx);
+    const parsedId = parseElementId(input.id, null);
+    updateTimeDiff(parsedId.name, parsedId.idx);
     updateTotal();
   };
 
@@ -242,7 +265,8 @@ function createDeleteCell(idx) {
   button.innerText = "🗑 ";
   button.setAttribute("tabindex", "-1");
   button.addEventListener("click", () => {
-    deleteTimeRow(idx);
+    const parsedId = parseElementId(button);
+    deleteTimeRow(parsedId.idx);
   });
 
   cell.append(button);
@@ -253,8 +277,7 @@ function createDeleteCell(idx) {
  * Add a new row to the `timeRows` table.
  **/
 function addNewTimeRow() {
-  const keys = getTimeRowKeys();
-  let idx = keys.length >= 1 ? keys.at(-1) + 1 : 1;
+  let idx = timeRows.size + 1;
   const tableRow = document.createElement("tr");
 
   const deleteCell = createDeleteCell(idx);
@@ -296,10 +319,9 @@ class Vim {
 
   /**
    * Create a new timeRow
-   * @param key? Optional `newRow` override
    */
-  newRow(key) {
-    key = key ? key : this.keys.newRow;
+  newRow() {
+    const key = this.keys.newRow;
     document.addEventListener("keydown", (e) => {
       if (e.key == key) {
         addNewTimeRow();
@@ -309,21 +331,20 @@ class Vim {
 
   /**
    * Delete a time row
-   * @param key? Optional `newRow` override
    */
-  deleteRow(key) {
-    key = key ? key : this.keys.delete;
+  deleteRow() {
+    const key = this.keys.delete;
     document.addEventListener("keydown", (e) => {
       if (e.key != key) {
         return;
       }
       const currEl = document.activeElement.parentNode.parentNode;
       try {
-        const idx = currEl.id.match(/row(\d+)/)[1];
+        const parsedId = parseElementId(currEl.id);
+        const idx = parsedId.idx;
         const row = idGet(`row${idx}`);
         if (row !== undefined) {
           deleteTimeRow(idx);
-          focusPrevInput(idx);
         }
       } catch (err) {
         console.log(err);
@@ -389,14 +410,13 @@ class Vim {
     // Navigation
     document.addEventListener("keydown", (e) => {
       if ("HJKLgG".includes(e.key)) {
-        const keys = getTimeRowKeys();
         const startType = "startInput";
         const endType = "endInput";
 
         let currNode = document.activeElement;
 
         if (!currNode || !currNode.classList.contains("timeInput")) {
-          currNode = idGet(`startInput${keys.at(0)}`);
+          currNode = idGet(`startInput1`);
         }
         const matches = currNode.id.match(/([A-Za-z]+)(\d+)/);
         let type = matches[1];
@@ -425,11 +445,11 @@ class Vim {
             type = endType;
             break;
           case "g":
-            rowIdx = keys.at(0);
+            rowIdx = 1;
             type = startType;
             break;
           case "G":
-            rowIdx = keys.at(-1);
+            rowIdx = timeRows.size;
             type = startType;
             break;
         }
