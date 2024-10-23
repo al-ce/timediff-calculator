@@ -80,7 +80,7 @@ function dateToFraction(dateObj) {
 function getTimeRowKeys() {
   const entries = Array.from(timeRows.entries());
   return entries.map((el) => {
-    return el.at(0);
+    return Number(el.at(0));
   });
 }
 
@@ -253,7 +253,8 @@ function createDeleteCell(idx) {
  * Add a new row to the `timeRows` table.
  **/
 function addNewTimeRow() {
-  const idx = timeRows.size + 1;
+  const keys = getTimeRowKeys();
+  let idx = keys.length >= 1 ? keys.at(-1) + 1 : 1;
   const tableRow = document.createElement("tr");
 
   const deleteCell = createDeleteCell(idx);
