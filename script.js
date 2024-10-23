@@ -43,9 +43,51 @@ function createTimeRow() {
 let timeRows = new Map();
 
 /** @typedef {Object} ParsedId
+ * @description Results of regex parse of an id with format `{name}{index}`
  * @property {string} name - name from parsed id, e.g. "row" parsed from "row1"
  * @property {number} idx - idx from parsed id, e.g. 1 parsed from "row1"
  */
+
+/** @typedef {Object} VimKeymap
+ * @property {string} decMin - Decrease minutes by 1
+ * @property {string} incMin - Increase minutes by 1
+ * @property {string} decHour - Decrease hour by 1
+ * @property {string} incHour - Increase hour by 1
+ * @property {string} middayToggle - toggle AM/PM
+ * @property {string} moveUp - Move up a row
+ * @property {string} moveDown - Move down a row
+ * @property {string} moveLeft - Move left within a row
+ * @property {string} moveRight - Move right within a row
+ * @property {string} goFirst - Go to the first row
+ * @property {string} goLast - Go to the last row
+ * @property {string} newRow - Create a new row
+ * @property {string} deleteRow - Delete the currently focused row
+ * @property {string} clearField - Clear the current input field
+ * @property {string} yankTotal - Yank the total to the system clipboard
+ * @property {string} yankTable - Yank the total to the system clipboard
+ * @property {string} adjustToggle - Toggle x for y adjustment
+ */
+
+/** @type {VimKeymap} **/
+const vimKeys = {
+  decMin: "J",
+  incMin: "K",
+  decHour: "H",
+  incHour: "L",
+  middayToggle: "x",
+  moveUp: "k",
+  moveDown: "j",
+  moveLeft: "h",
+  moveRight: "l",
+  goFirst: "g",
+  goLast: "G",
+  newRow: "o",
+  deleteRow: "d",
+  clearField: "c",
+  yankTotal: "y",
+  yankTable: "Y",
+  adjustToggle: "a",
+};
 
 // %% Helpers %%
 
@@ -294,17 +336,12 @@ function addNewTimeRow() {
 }
 
 // %% Vim-like bindings %%
-class Vim {
+class VimActions {
   /**
    * Create object for adding Vim like keybinds for the page
    * @class
    */
-  constructor() {
-    this.keys = {
-      newRow: "o",
-      delete: "d",
-    };
-  }
+  constructor() {}
 
   /**
    * Set keybinds
@@ -321,7 +358,7 @@ class Vim {
    * Create a new timeRow
    */
   newRow() {
-    const key = this.keys.newRow;
+    const key = vimKeys.newRow;
     document.addEventListener("keydown", (e) => {
       if (e.key == key) {
         addNewTimeRow();
@@ -333,9 +370,8 @@ class Vim {
    * Delete a time row
    */
   deleteRow() {
-    const key = this.keys.delete;
     document.addEventListener("keydown", (e) => {
-      if (e.key != key) {
+      if (e.key != vimKeys.deleteRow) {
         return;
       }
       const currEl = document.activeElement.parentNode.parentNode;
@@ -357,12 +393,13 @@ class Vim {
    */
   clear() {
     document.addEventListener("keydown", (e) => {
-      if (e.key == "c") {
-        const currNode = document.activeElement;
-        currNode.value = "";
-        currNode.blur();
-        currNode.focus();
+      if (e.key != vimKeys.clearField) {
+        return;
       }
+      const currNode = document.activeElement;
+      currNode.value = "";
+      currNode.blur();
+      currNode.focus();
     });
   }
 
@@ -371,35 +408,44 @@ class Vim {
    */
   adjustTime() {
     document.addEventListener("keydown", (e) => {
-      if (!e.altKey && "hjklx".includes(e.key)) {
-        let currNode = document.activeElement;
-        if (!currNode || !currNode.classList.contains("timeInput")) {
-          return;
-        }
-
-        switch (e.key) {
-          case "h":
-            currNode.stepDown(60);
-            break;
-          case "j":
-            currNode.stepDown(1);
-            break;
-          case "k":
-            currNode.stepUp(1);
-            break;
-          case "l":
-            currNode.stepUp(60);
-            break;
-          case "x":
-            const hh = currNode.value.match(/(\d+)/)[1];
-            let step = Number(hh) < 12 ? 720 : -720;
-            currNode.stepUp(step);
-            break;
-        }
-
-        const event = new Event("input");
-        currNode.dispatchEvent(event);
+      const adjustKeys = [
+        vimKeys.decHour,
+        vimKeys.decMin,
+        vimKeys.incMin,
+        vimKeys.incHour,
+        vimKeys.middayToggle,
+      ];
+      if (e.altKey || !adjustKeys.includes(e.key)) {
+        return;
       }
+
+      let currNode = document.activeElement;
+      if (!currNode || !currNode.classList.contains("timeInput")) {
+        return;
+      }
+
+      switch (e.key) {
+        case vimKeys.decHour:
+          currNode.stepDown(60);
+          break;
+        case vimKeys.decMin:
+          currNode.stepDown(1);
+          break;
+        case vimKeys.incMin:
+          currNode.stepUp(1);
+          break;
+        case vimKeys.incHour:
+          currNode.stepUp(60);
+          break;
+        case vimKeys.middayToggle:
+          const hh = currNode.value.match(/(\d+)/)[1];
+          let step = Number(hh) < 12 ? 720 : -720;
+          currNode.stepUp(step);
+          break;
+      }
+
+      const event = new Event("input");
+      currNode.dispatchEvent(event);
     });
   }
 
@@ -409,53 +455,65 @@ class Vim {
   navigate() {
     // Navigation
     document.addEventListener("keydown", (e) => {
-      if ("HJKLgG".includes(e.key)) {
-        const startType = "startInput";
-        const endType = "endInput";
+      const navKeys = [
+        vimKeys.moveLeft,
+        vimKeys.moveDown,
+        vimKeys.moveUp,
+        vimKeys.moveRight,
+        vimKeys.goFirst,
+        vimKeys.goLast,
+      ];
 
-        let currNode = document.activeElement;
-
-        if (!currNode || !currNode.classList.contains("timeInput")) {
-          currNode = idGet(`startInput1`);
-        }
-        const matches = currNode.id.match(/([A-Za-z]+)(\d+)/);
-        let type = matches[1];
-        let rowIdx = Number(matches[2]);
-
-        const currRow = idGet(`row${rowIdx}`);
-        let siblingRow;
-        if (e.key == "K") {
-          siblingRow = currRow.previousSibling;
-        } else if (e.key == "J") {
-          siblingRow = currRow.nextSibling;
-        }
-        if (siblingRow) {
-          rowIdx = siblingRow.id.match(/row(\d+)/)[1];
-        }
-
-        switch (e.key) {
-          case "H":
-            type = startType;
-            break;
-          case "J":
-            break;
-          case "K":
-            break;
-          case "L":
-            type = endType;
-            break;
-          case "g":
-            rowIdx = 1;
-            type = startType;
-            break;
-          case "G":
-            rowIdx = timeRows.size;
-            type = startType;
-            break;
-        }
-
-        idGet(`${type}${rowIdx}`).focus();
+      if (!navKeys.includes(e.key)) {
+        return;
       }
+
+      const startType = "startInput";
+      const endType = "endInput";
+
+      let currNode = document.activeElement;
+
+      if (!currNode || !currNode.classList.contains("timeInput")) {
+        currNode = idGet(`startInput1`);
+      }
+
+      const matches = currNode.id.match(/([A-Za-z]+)(\d+)/);
+      let type = matches[1];
+      let rowIdx = Number(matches[2]);
+
+      const currRow = idGet(`row${rowIdx}`);
+      let siblingRow;
+      if (e.key == vimKeys.moveUp) {
+        siblingRow = currRow.previousSibling;
+      } else if (e.key == vimKeys.moveDown) {
+        siblingRow = currRow.nextSibling;
+      }
+      if (siblingRow) {
+        rowIdx = siblingRow.id.match(/row(\d+)/)[1];
+      }
+
+      switch (e.key) {
+        case vimKeys.moveLeft:
+          type = startType;
+          break;
+        case vimKeys.moveDown:
+          break;
+        case vimKeys.moveUp:
+          break;
+        case vimKeys.moveRight:
+          type = endType;
+          break;
+        case vimKeys.goFirst:
+          rowIdx = 1;
+          type = startType;
+          break;
+        case vimKeys.goLast:
+          rowIdx = timeRows.size;
+          type = startType;
+          break;
+      }
+
+      idGet(`${type}${rowIdx}`).focus();
     });
   }
 }
@@ -464,7 +522,7 @@ class Vim {
 document.title = title;
 
 function onLoad() {
-  const vim = new Vim();
+  const vim = new VimActions();
   vim.keymapSet();
 
   idGet("calcCaption").innerText = title;
