@@ -147,13 +147,21 @@ function parseElementId(id) {
 
 /**
  * Update the time diff (subtotal) of a timeRow.
- * @param {"start" | "end"} name Name of input element
+ * @param {"startInput" | "endInput"} name Name of input element
  * @param {number} idx Index to identify the timeRow
  **/
 function updateTimeDiff(name, idx) {
   const timeRow = timeRows.get(idx);
   const inputElement = idGet(`${name}${idx}`);
   const subtotalCell = idGet(`subtotalCell${idx}`);
+  const value = inputElement.value;
+
+  if (value == "") {
+    subtotalCell.innerText = defaultSubtotal;
+    timeRow.diff = 0;
+    return;
+  }
+
   timeRow[name] = new Date(`${defaultDate}T${inputElement.value}Z`);
   timeRow.diff = timeRow.endInput - timeRow.startInput;
 
@@ -400,6 +408,9 @@ class VimActions {
       currNode.value = "";
       currNode.blur();
       currNode.focus();
+      const parsedId = parseElementId(currNode.id);
+      updateTimeDiff(parsedId.name, parsedId.idx);
+      updateTotal();
     });
   }
 
