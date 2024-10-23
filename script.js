@@ -377,6 +377,7 @@ class VimActions {
     this.adjustTime();
     this.navigate();
     this.yankTotal();
+    this.yankTable();
   }
 
   /**
@@ -545,7 +546,8 @@ class VimActions {
     });
   }
 
-  /** Yank total to system clipboard
+  /**
+   * Yank total to the system clipboard.
    */
   yankTotal() {
     document.addEventListener("keydown", (e) => {
@@ -555,6 +557,36 @@ class VimActions {
           .writeText(total)
           .then(() => {
             console.log("Copy success:", total);
+          })
+          .catch((err) => {
+            console.error("Error copying text: ", err);
+          });
+      }
+    });
+  }
+
+  /**
+   * Yank all completed rows as a TSV to the system clipboard.
+   **/
+  yankTable() {
+    document.addEventListener("keydown", (e) => {
+      if (e.key == vimKeymap.yankTable.key) {
+        let data = "";
+        let startTime, endTime, subtotal;
+        timeRows.forEach((v, k, _) => {
+          startTime = idGet(`startInput${k}`).value;
+          endTime = idGet(`endInput${k}`).value;
+          subtotal = dateToFraction(v.diff)
+          data += `${startTime}\t${endTime}\t${subtotal}\n`
+        })
+
+        const total = updateTotal();
+        data += `\n\t\t${total}`;
+
+        navigator.clipboard
+          .writeText(data)
+          .then(() => {
+            console.log("Copy success:\n\n", data);
           })
           .catch((err) => {
             console.error("Error copying text: ", err);
