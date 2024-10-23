@@ -146,7 +146,7 @@ function updateTimeDiff(name, idx) {
  **/
 function updateTotal() {
   let total = 0;
-  timeRows.forEach((v, k) => {
+  timeRows.forEach((v, _) => {
     total += v.diff;
   });
 
@@ -241,7 +241,7 @@ function createDeleteCell(idx) {
   button.innerText = defaultSubtotal;
   button.innerText = "🗑 ";
   button.setAttribute("tabindex", "-1");
-  button.addEventListener("click", (e) => {
+  button.addEventListener("click", () => {
     deleteTimeRow(idx);
   });
 
