@@ -75,6 +75,17 @@ function dateToFraction(dateObj) {
 }
 
 /**
+ * Get an array of keys from the timeRow Map object's entries
+ **/
+function getTimeRowKeys() {
+  const entries = Array.from(timeRows.entries());
+  return entries.map((el) => {
+    return el.at(0)
+  })
+
+}
+
+/**
  * Focus either the previous input cell in the timeRows Map given a start
  * index, or the first if one is not specified.
  * @param {start?} number An optional start index
@@ -89,7 +100,11 @@ function focusPrevInput(start) {
       break;
     }
   }
-  // FIX: does not focus first row after first row is deleted
+
+  // if (startInputElement === null) {
+  //   const keys = 
+  // }
+
   startInputElement.focus();
 }
 
@@ -373,7 +388,7 @@ class Vim {
     // Navigation
     document.addEventListener("keydown", (e) => {
       if ("HJKLgG".includes(e.key)) {
-        const keys = Array.from(timeRows.entries());
+        const keys = getTimeRowKeys();
         const startType = "startInput";
         const endType = "endInput";
 
@@ -411,11 +426,11 @@ class Vim {
             type = endType;
             break;
           case "g":
-            rowIdx = keys.at(0).at(0);
+            rowIdx = keys.at(0);
             type = startType;
             break;
           case "G":
-            rowIdx = keys.at(-1).at(0);
+            rowIdx = keys.at(-1);
             type = startType;
             break;
         }
