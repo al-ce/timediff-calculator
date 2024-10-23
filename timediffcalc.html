@@ -288,7 +288,6 @@
     * @return {number}
     **/
     function focusPrevInput(start) {
-      let keys = Array.from(timeRows.keys());
       start = start == null ? keys.length : start;
       let startInputElement;
       for (; start > 0; start--) {
@@ -484,8 +483,9 @@
       keymapSet() {
         this.newRow();
         this.deleteRow();
-        this.adjustTime();
         this.clear();
+        this.adjustTime();
+        this.navigate();
       }
 
       /**
@@ -574,6 +574,69 @@
             const event = new Event("input");
             currNode.dispatchEvent(event);
 
+          }
+        })
+      }
+
+
+      /**
+      * Navigate with JK (next/prev row), HL (next/prev input) or gG (first/last start input)
+      */
+      navigate() {
+
+        // Navigation
+        document.addEventListener("keydown", (e) => {
+          if ("HJKLgG".includes(e.key)) {
+            const keys = Array.from(timeRows.entries());
+            const startType = "startInput";
+            const endType = "endInput";
+
+            let currNode = document.activeElement;
+
+            if (!currNode || !currNode.classList.contains("timeInput")) {
+              findValidNode().focus();
+              return;
+            }
+            const matches = currNode.id.match(/(\w+)(\d+)/);
+            let type = matches[1]
+            let rowIdx = Number(matches[2]);
+
+            const currRow = idGet(`row${rowIdx}`);
+            let siblingRow;
+            if (e.key == "K") {
+              siblingRow = currRow.previousSibling
+            } else if (e.key == "J") {
+              siblingRow = currRow.nextSibling
+            }
+            if (siblingRow) {
+              rowIdx = siblingRow.id.match(/row(\d+)/)[1];
+            }
+
+
+            switch (e.key) {
+              case "H":
+                type = startType
+                break;
+              case "J":
+                break;
+              case "K":
+                break;
+              case "L":
+                type = endType;
+                break;
+              case "g":
+                rowIdx = keys.at(0).at(0);
+                console.log("rowIdx g: "+ rowIdx)
+                type = startType;
+                break;
+              case "G":
+                rowIdx = keys.at(-1).at(0);
+                console.log("rowIdx g: "+ rowIdx)
+                type = startType;
+                break;
+            }
+
+            idGet(`${type}${rowIdx}`).focus();
           }
         })
       }
