@@ -80,9 +80,8 @@ function dateToFraction(dateObj) {
 function getTimeRowKeys() {
   const entries = Array.from(timeRows.entries());
   return entries.map((el) => {
-    return el.at(0)
-  })
-
+    return el.at(0);
+  });
 }
 
 /**
@@ -396,9 +395,7 @@ class Vim {
         let currNode = document.activeElement;
 
         if (!currNode || !currNode.classList.contains("timeInput")) {
-          // TODO:
-          findValidNode().focus();
-          return;
+          currNode = idGet(`startInput${keys.at(0)}`);
         }
         const matches = currNode.id.match(/([A-Za-z]+)(\d+)/);
         let type = matches[1];
