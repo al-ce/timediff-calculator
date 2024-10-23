@@ -384,7 +384,7 @@ class Vim {
           findValidNode().focus();
           return;
         }
-        const matches = currNode.id.match(/(\w+)(\d+)/);
+        const matches = currNode.id.match(/([A-Za-z]+)(\d+)/);
         let type = matches[1];
         let rowIdx = Number(matches[2]);
 
