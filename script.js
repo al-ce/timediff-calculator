@@ -48,45 +48,58 @@ let timeRows = new Map();
  * @property {number} idx - idx from parsed id, e.g. 1 parsed from "row1"
  */
 
+/**
+ * A representation of a key to press and the description of its action.
+ * @typedef {Object} VimKey
+ * @property {string} key - The key to be pressed
+ * @property {string} desc - The description of its action
+ */
+
 /** @typedef {Object} VimKeymap
- * @property {string} decMin - Decrease minutes by 1
- * @property {string} incMin - Increase minutes by 1
- * @property {string} decHour - Decrease hour by 1
- * @property {string} incHour - Increase hour by 1
- * @property {string} middayToggle - toggle AM/PM
- * @property {string} moveUp - Move up a row
- * @property {string} moveDown - Move down a row
- * @property {string} moveLeft - Move left within a row
- * @property {string} moveRight - Move right within a row
- * @property {string} goFirst - Go to the first row
- * @property {string} goLast - Go to the last row
- * @property {string} newRow - Create a new row
- * @property {string} deleteRow - Delete the currently focused row
- * @property {string} clearField - Clear the current input field
- * @property {string} yankTotal - Yank the total to the system clipboard
- * @property {string} yankTable - Yank the total to the system clipboard
- * @property {string} adjustToggle - Toggle x for y adjustment
+ * @property {VimKey} decMin - Decrease minutes by 1
+ * @property {VimKey} incMin - Increase minutes by 1
+ * @property {VimKey} decHour - Decrease hour by 1
+ * @property {VimKey} incHour - Increase hour by 1
+ * @property {VimKey} middayToggle - toggle AM/PM
+ * @property {VimKey} moveUp - Move up a row
+ * @property {VimKey} moveDown - Move down a row
+ * @property {VimKey} moveLeft - Move left within a row
+ * @property {VimKey} moveRight - Move right within a row
+ * @property {VimKey} goFirst - Go to the first row
+ * @property {VimKey} goLast - Go to the last row
+ * @property {VimKey} newRow - Create a new row
+ * @property {VimKey} deleteRow - Delete the currently focused row
+ * @property {VimKey} clearField - Clear the current input field
+ * @property {VimKey} yankTotal - Yank the total to the system clipboard
+ * @property {VimKey} yankTable - Yank the total to the system clipboard
+ * @property {VimKey} adjustToggle - Toggle x for y adjustment
  */
 
 /** @type {VimKeymap} **/
-const vimKeys = {
-  decMin: "J",
-  incMin: "K",
-  decHour: "H",
-  incHour: "L",
-  middayToggle: "x",
-  moveUp: "k",
-  moveDown: "j",
-  moveLeft: "h",
-  moveRight: "l",
-  goFirst: "g",
-  goLast: "G",
-  newRow: "o",
-  deleteRow: "d",
-  clearField: "c",
-  yankTotal: "y",
-  yankTable: "Y",
-  adjustToggle: "a",
+const vimKeymap = {
+  moveDown: { key: "j", desc: "move down a row" },
+  moveUp: { key: "k", desc: "move up a row" },
+  moveLeft: { key: "h", desc: "move left a field" },
+  moveRight: { key: "l", desc: "move right a field" },
+  goFirst: { key: "g", desc: "go to first row" },
+  goLast: { key: "G", desc: "go to last row" },
+  decMin: { key: "J", desc: "decrease by 1 minute" },
+  incMin: { key: "K", desc: "increase by 1 minute" },
+  decHour: { key: "H", desc: "decrease by 1 hour" },
+  incHour: { key: "L", desc: "increase by 1 hour" },
+  middayToggle: { key: "x", desc: "toggle AM/PM" },
+  newRow: { key: "o", desc: "create a new row" },
+  deleteRow: { key: "d", desc: "delete the current row" },
+  clearField: { key: "c", desc: "clear the current input field" },
+  yankTotal: {
+    key: "y",
+    desc: "yank (copy) the total to the system clipboard",
+  },
+  yankTable: {
+    key: "Y",
+    desc: "copy all complete rows in TSV format to the system clipboard",
+  },
+  adjustToggle: { key: "a", desc: "toggle adjustments" },
 };
 
 // %% Helpers %%
@@ -366,7 +379,7 @@ class VimActions {
    * Create a new timeRow
    */
   newRow() {
-    const key = vimKeys.newRow;
+    const key = vimKeymap.newRow.key;
     document.addEventListener("keydown", (e) => {
       if (e.key == key) {
         addNewTimeRow();
@@ -379,7 +392,7 @@ class VimActions {
    */
   deleteRow() {
     document.addEventListener("keydown", (e) => {
-      if (e.key != vimKeys.deleteRow) {
+      if (e.key != vimKeymap.deleteRow.key) {
         return;
       }
       const currEl = document.activeElement.parentNode.parentNode;
@@ -401,7 +414,7 @@ class VimActions {
    */
   clear() {
     document.addEventListener("keydown", (e) => {
-      if (e.key != vimKeys.clearField) {
+      if (e.key != vimKeymap.clearField.key) {
         return;
       }
       const currNode = document.activeElement;
@@ -420,11 +433,11 @@ class VimActions {
   adjustTime() {
     document.addEventListener("keydown", (e) => {
       const adjustKeys = [
-        vimKeys.decHour,
-        vimKeys.decMin,
-        vimKeys.incMin,
-        vimKeys.incHour,
-        vimKeys.middayToggle,
+        vimKeymap.decHour.key,
+        vimKeymap.decMin.key,
+        vimKeymap.incMin.key,
+        vimKeymap.incHour.key,
+        vimKeymap.middayToggle.key,
       ];
       if (e.altKey || !adjustKeys.includes(e.key)) {
         return;
@@ -436,19 +449,19 @@ class VimActions {
       }
 
       switch (e.key) {
-        case vimKeys.decHour:
+        case vimKeymap.decHour.key:
           currNode.stepDown(60);
           break;
-        case vimKeys.decMin:
+        case vimKeymap.decMin.key:
           currNode.stepDown(1);
           break;
-        case vimKeys.incMin:
+        case vimKeymap.incMin.key:
           currNode.stepUp(1);
           break;
-        case vimKeys.incHour:
+        case vimKeymap.incHour.key:
           currNode.stepUp(60);
           break;
-        case vimKeys.middayToggle:
+        case vimKeymap.middayToggle.key:
           const hh = currNode.value.match(/(\d+)/)[1];
           let step = Number(hh) < 12 ? 720 : -720;
           currNode.stepUp(step);
@@ -467,12 +480,12 @@ class VimActions {
     // Navigation
     document.addEventListener("keydown", (e) => {
       const navKeys = [
-        vimKeys.moveLeft,
-        vimKeys.moveDown,
-        vimKeys.moveUp,
-        vimKeys.moveRight,
-        vimKeys.goFirst,
-        vimKeys.goLast,
+        vimKeymap.moveLeft.key,
+        vimKeymap.moveDown.key,
+        vimKeymap.moveUp.key,
+        vimKeymap.moveRight.key,
+        vimKeymap.goFirst.key,
+        vimKeymap.goLast.key,
       ];
 
       if (!navKeys.includes(e.key)) {
@@ -494,9 +507,9 @@ class VimActions {
 
       const currRow = idGet(`row${rowIdx}`);
       let siblingRow;
-      if (e.key == vimKeys.moveUp) {
+      if (e.key == vimKeymap.moveUp.key) {
         siblingRow = currRow.previousSibling;
-      } else if (e.key == vimKeys.moveDown) {
+      } else if (e.key == vimKeymap.moveDown.key) {
         siblingRow = currRow.nextSibling;
       }
       if (siblingRow) {
@@ -504,21 +517,21 @@ class VimActions {
       }
 
       switch (e.key) {
-        case vimKeys.moveLeft:
+        case vimKeymap.moveLeft.key:
           type = startType;
           break;
-        case vimKeys.moveDown:
+        case vimKeymap.moveDown.key:
           break;
-        case vimKeys.moveUp:
+        case vimKeymap.moveUp.key:
           break;
-        case vimKeys.moveRight:
+        case vimKeymap.moveRight.key:
           type = endType;
           break;
-        case vimKeys.goFirst:
+        case vimKeymap.goFirst.key:
           rowIdx = 1;
           type = startType;
           break;
-        case vimKeys.goLast:
+        case vimKeymap.goLast.key:
           rowIdx = timeRows.size;
           type = startType;
           break;
@@ -529,12 +542,41 @@ class VimActions {
   }
 }
 
+// %% Set HTML %%
+
+/**
+  Set the HTML content of the keymap guide
+  */
+function setKeymapContent() {
+  const keymapContent = idGet("keymapContent");
+
+  for (const [action, vimKey] of Object.entries(vimKeymap)) {
+    const entry = document.createElement("div");
+    const keyIcon = document.createElement("span");
+    const description = document.createElement("span");
+
+    entry.id = `vim${action.charAt(0).toUpperCase()}${action.slice(1)}`
+
+    keyIcon.innerText = vimKey.key;
+    keyIcon.className = "key";
+
+    description.innerText = vimKey.desc;
+
+    entry.append(keyIcon, description);
+    entry.className = "keymapEntry";
+
+    keymapContent.append(entry);
+  }
+}
+
+
 // %% On Load %%
 document.title = title;
 
 function onLoad() {
   const vim = new VimActions();
   vim.keymapSet();
+  setKeymapContent();
 
   idGet("calcCaption").innerText = title;
 
@@ -544,6 +586,7 @@ function onLoad() {
 
   // Focus first row on initial page load
   idGet("startInput1").focus();
+
 }
 
 document.body.onload = onLoad;
