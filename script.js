@@ -48,60 +48,6 @@ let timeRows = new Map();
  * @property {number} idx - idx from parsed id, e.g. 1 parsed from "row1"
  */
 
-/**
- * A representation of a key to press and the description of its action.
- * @typedef {Object} VimKey
- * @property {string} key - The key to be pressed
- * @property {string} desc - The description of its action
- */
-
-/** @typedef {Object} VimKeymap
- * @property {VimKey} decMin - Decrease minutes by 1
- * @property {VimKey} incMin - Increase minutes by 1
- * @property {VimKey} decHour - Decrease hour by 1
- * @property {VimKey} incHour - Increase hour by 1
- * @property {VimKey} middayToggle - toggle AM/PM
- * @property {VimKey} moveUp - Move up a row
- * @property {VimKey} moveDown - Move down a row
- * @property {VimKey} moveLeft - Move left within a row
- * @property {VimKey} moveRight - Move right within a row
- * @property {VimKey} goFirst - Go to the first row
- * @property {VimKey} goLast - Go to the last row
- * @property {VimKey} newRow - Create a new row
- * @property {VimKey} deleteRow - Delete the currently focused row
- * @property {VimKey} clearField - Clear the current input field
- * @property {VimKey} yankTotal - Yank the total to the system clipboard
- * @property {VimKey} yankTable - Yank the total to the system clipboard
- * @property {VimKey} adjustToggle - Toggle x for y adjustment
- */
-
-/** @type {VimKeymap} **/
-const vimKeymap = {
-  moveDown: { key: "j", desc: "move down a row" },
-  moveUp: { key: "k", desc: "move up a row" },
-  moveLeft: { key: "h", desc: "move left a field" },
-  moveRight: { key: "l", desc: "move right a field" },
-  goFirst: { key: "g", desc: "go to first row" },
-  goLast: { key: "G", desc: "go to last row" },
-  decMin: { key: "J", desc: "decrease by 1 minute" },
-  incMin: { key: "K", desc: "increase by 1 minute" },
-  decHour: { key: "H", desc: "decrease by 1 hour" },
-  incHour: { key: "L", desc: "increase by 1 hour" },
-  middayToggle: { key: "x", desc: "toggle AM/PM" },
-  newRow: { key: "o", desc: "create a new row" },
-  deleteRow: { key: "d", desc: "delete the current row" },
-  clearField: { key: "c", desc: "clear the current input field" },
-  yankTotal: {
-    key: "y",
-    desc: "yank (copy) the total to the system clipboard",
-  },
-  yankTable: {
-    key: "Y",
-    desc: "copy all complete rows in TSV format to the system clipboard",
-  },
-  adjustToggle: { key: "a", desc: "toggle adjustments" },
-};
-
 // %% Helpers %%
 
 /**
@@ -189,6 +135,7 @@ function updateTimeDiff(name, idx) {
 
 /**
  * Update the total cell in the table to reflect the current totals.
+ @return {number} The fractional total
  **/
 function updateTotal() {
   let total = 0;
@@ -200,6 +147,7 @@ function updateTotal() {
   fractional = twoPad(fractional);
 
   idGet("totalDiv").innerText = fractional;
+  return fractional;
 }
 
 /**
@@ -357,6 +305,61 @@ function addNewTimeRow() {
 }
 
 // %% Vim-like bindings %%
+
+/**
+ * A representation of a key to press and the description of its action.
+ * @typedef {Object} VimKey
+ * @property {string} key - The key to be pressed
+ * @property {string} desc - The description of its action
+ */
+
+/** @typedef {Object} VimKeymap
+ * @property {VimKey} decMin - Decrease minutes by 1
+ * @property {VimKey} incMin - Increase minutes by 1
+ * @property {VimKey} decHour - Decrease hour by 1
+ * @property {VimKey} incHour - Increase hour by 1
+ * @property {VimKey} middayToggle - toggle AM/PM
+ * @property {VimKey} moveUp - Move up a row
+ * @property {VimKey} moveDown - Move down a row
+ * @property {VimKey} moveLeft - Move left within a row
+ * @property {VimKey} moveRight - Move right within a row
+ * @property {VimKey} goFirst - Go to the first row
+ * @property {VimKey} goLast - Go to the last row
+ * @property {VimKey} newRow - Create a new row
+ * @property {VimKey} deleteRow - Delete the currently focused row
+ * @property {VimKey} clearField - Clear the current input field
+ * @property {VimKey} yankTotal - Yank the total to the system clipboard
+ * @property {VimKey} yankTable - Yank the total to the system clipboard
+ * @property {VimKey} adjustToggle - Toggle x for y adjustment
+ */
+
+/** @type {VimKeymap} **/
+const vimKeymap = {
+  moveDown: { key: "j", desc: "move down a row" },
+  moveUp: { key: "k", desc: "move up a row" },
+  moveLeft: { key: "h", desc: "move left a field" },
+  moveRight: { key: "l", desc: "move right a field" },
+  goFirst: { key: "g", desc: "go to first row" },
+  goLast: { key: "G", desc: "go to last row" },
+  decMin: { key: "J", desc: "decrease by 1 minute" },
+  incMin: { key: "K", desc: "increase by 1 minute" },
+  decHour: { key: "H", desc: "decrease by 1 hour" },
+  incHour: { key: "L", desc: "increase by 1 hour" },
+  middayToggle: { key: "x", desc: "toggle AM/PM" },
+  newRow: { key: "o", desc: "create a new row" },
+  deleteRow: { key: "d", desc: "delete the current row" },
+  clearField: { key: "c", desc: "clear the current input field" },
+  yankTotal: {
+    key: "y",
+    desc: "yank (copy) the total to the system clipboard",
+  },
+  yankTable: {
+    key: "Y",
+    desc: "copy all complete rows in TSV format to the system clipboard",
+  },
+  adjustToggle: { key: "a", desc: "toggle adjustments" },
+};
+
 class VimActions {
   /**
    * Create object for adding Vim like keybinds for the page
@@ -373,6 +376,7 @@ class VimActions {
     this.clear();
     this.adjustTime();
     this.navigate();
+    this.yankTotal();
   }
 
   /**
@@ -410,7 +414,7 @@ class VimActions {
   }
 
   /**
-   * Clear the focused input field with c
+   * Clear the focused input field
    */
   clear() {
     document.addEventListener("keydown", (e) => {
@@ -428,7 +432,7 @@ class VimActions {
   }
 
   /**
-   * Adjust time with jk  (minutes) hl (hours) or x (AM/PM toggle)
+   * Adjust time minutes or hours by 1 unit, and toggle AM/PM
    */
   adjustTime() {
     document.addEventListener("keydown", (e) => {
@@ -474,7 +478,7 @@ class VimActions {
   }
 
   /**
-   * Navigate with JK (next/prev row), HL (next/prev input) or gG (first/last start input)
+   * Navigate to next, previous, first, or last row, or move to next/prev field
    */
   navigate() {
     // Navigation
@@ -540,6 +544,24 @@ class VimActions {
       idGet(`${type}${rowIdx}`).focus();
     });
   }
+
+  /** Yank total to system clipboard
+   */
+  yankTotal() {
+    document.addEventListener("keydown", (e) => {
+      if (e.key == vimKeymap.yankTotal.key) {
+        const total = updateTotal();
+        navigator.clipboard
+          .writeText(total)
+          .then(() => {
+            console.log("Copy success:", total);
+          })
+          .catch((err) => {
+            console.error("Error copying text: ", err);
+          });
+      }
+    });
+  }
 }
 
 // %% Set HTML %%
@@ -555,7 +577,7 @@ function setKeymapContent() {
     const keyIcon = document.createElement("span");
     const description = document.createElement("span");
 
-    entry.id = `vim${action.charAt(0).toUpperCase()}${action.slice(1)}`
+    entry.id = `vim${action.charAt(0).toUpperCase()}${action.slice(1)}`;
 
     keyIcon.innerText = vimKey.key;
     keyIcon.className = "key";
@@ -568,7 +590,6 @@ function setKeymapContent() {
     keymapContent.append(entry);
   }
 }
-
 
 // %% On Load %%
 document.title = title;
@@ -586,7 +607,6 @@ function onLoad() {
 
   // Focus first row on initial page load
   idGet("startInput1").focus();
-
 }
 
 document.body.onload = onLoad;
