@@ -352,6 +352,7 @@ function addNewTimeRow() {
  * @typedef {Object} VimKey
  * @property {string} key - The key to be pressed
  * @property {string} desc - The description of its action
+ * @property {string} cat - The action's category (nav, manipulation, etc.)
  */
 
 /** @typedef {Object} VimKeymap
@@ -377,31 +378,31 @@ function addNewTimeRow() {
 
 /** @type {VimKeymap} **/
 const vimKeymap = {
-  moveDown: { key: "j", desc: "move down a row" },
-  moveUp: { key: "k", desc: "move up a row" },
-  moveLeft: { key: "h", desc: "move left a field" },
-  moveRight: { key: "l", desc: "move right a field" },
-  goFirst: { key: "g", desc: "go to first row" },
-  goLast: { key: "G", desc: "go to last row" },
-  decMin: { key: "J", desc: "decrease by 1 minute" },
-  incMin: { key: "K", desc: "increase by 1 minute" },
-  decHour: { key: "H", desc: "decrease by 1 hour" },
-  incHour: { key: "L", desc: "increase by 1 hour" },
-  middayToggle: { key: "x", desc: "toggle AM/PM" },
-  newRow: { key: "o", desc: "create a new row" },
-  deleteRow: { key: "d", desc: "delete the current row" },
-  resetTable: { key: "r", desc: "reset the table" },
-  clearField: { key: "c", desc: "clear the current input field" },
+  moveDown: { key: "j", desc: "move down a row" , cat: "Navigation" },
+  moveUp: { key: "k", desc: "move up a row" , cat: "Navigation" },
+  moveLeft: { key: "h", desc: "move left a field" , cat: "Navigation" },
+  moveRight: { key: "l", desc: "move right a field" , cat: "Navigation" },
+  goFirst: { key: "g", desc: "go to first row" , cat: "Navigation" },
+  goLast: { key: "G", desc: "go to last row" , cat: "Navigation" },
+  decMin: { key: "J", desc: "decrease by 1 minute" , cat: "Input" },
+  incMin: { key: "K", desc: "increase by 1 minute" , cat: "Input" },
+  decHour: { key: "H", desc: "decrease by 1 hour" , cat: "Input" },
+  incHour: { key: "L", desc: "increase by 1 hour" , cat: "Input" },
+  middayToggle: { key: "x", desc: "toggle AM/PM" , cat: "Input" },
+  newRow: { key: "o", desc: "create a new row" , cat: "Table" },
+  deleteRow: { key: "d", desc: "delete the current row" , cat: "Table" },
+  resetTable: { key: "r", desc: "reset the table" , cat: "Table" },
+  clearField: { key: "c", desc: "clear the current input field" , cat: "Table" },
   yankTotal: {
     key: "y",
     desc: "yank (copy) the total to the system clipboard",
-  },
+   cat: "Table" },
   yankTable: {
     key: "Y",
     desc: "copy all complete rows in TSV format to the system clipboard",
-  },
-  toggleAdjust: { key: "z", desc: "toggle adjustments" },
-  displayKeymap: { key: "?", desc: "show/hide this keymap" },
+   cat: "Table" },
+  toggleAdjust: { key: "z", desc: "toggle adjustments" , cat: "Misc" },
+  displayKeymap: { key: "?", desc: "show/hide this keymap" , cat: "Misc" },
 };
 
 class VimActions {
@@ -673,7 +674,7 @@ class VimActions {
       if (e.key == vimKeymap.displayKeymap.key) {
         const keymapContent = idGet("keymapContent");
         const visible = keymapContent.style.display;
-        keymapContent.style.display = visible == "none" ? "block" : "none";
+        keymapContent.style.display = visible == "block" ? "none" : "block";
       }
     });
   }
@@ -685,7 +686,6 @@ class VimActions {
   Set the HTML content of the keymap guide
   */
 function setKeymapContent() {
-  const keymapContent = idGet("keymapContent");
 
   for (const [action, vimKey] of Object.entries(vimKeymap)) {
     const entry = document.createElement("div");
@@ -702,7 +702,9 @@ function setKeymapContent() {
     entry.append(keyIcon, description);
     entry.className = "keymapEntry";
 
-    keymapContent.append(entry);
+    idGet(`keyCat${vimKey.cat}`).append(entry);
+
+    // keymapContent.append(entry);
   }
 }
 

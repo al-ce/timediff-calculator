@@ -49,6 +49,10 @@
       border-radius: 4px;
     }
 
+    input[type=time] {
+      width: 100px;
+    }
+
     table {
       box-shadow: var(--shadows);
       table-layout: fixed;
@@ -110,8 +114,8 @@
       background-color: var(--mistygray);
     }
 
-    .content {
-      max-width: 900px;
+    #bodyContent {
+      max-width: 950px;
       padding-top: 20px;
       display: flex;
       flex-flow: row wrap;
@@ -120,10 +124,11 @@
       justify-content: space-evenly;
     }
 
-    .calculator {}
+    #calculator {}
 
-    .firstCol {
+    #secondaryCol {
       width: 275px;
+      border-radius: 4px;
     }
 
 
@@ -132,11 +137,17 @@
       text-align: left;
       border: 2px solid black;
       box-shadow: var(--shadows);
+      border-radius: 4px;
+      margin-bottom: 16px;
     }
 
     #optionsContent,
     #keymapContent {
       margin: 8px;
+    }
+
+    #keymapContent {
+      display: none;
     }
 
     #optionsHeader,
@@ -202,6 +213,25 @@
       font-style: italic;
       font-weight: bold;
     }
+
+    .keyCategoryHeader {
+      align-content: center;
+      color: var(--white);
+      display: flex;
+      background-color: var(--peacock);
+      border: 1px solid var(--black);
+      border-radius: 4px;
+      font-weight: bold;
+      margin: 2px;
+      padding: 4px;
+
+    }
+
+    .keyCategoryContent {
+      font-size: smaller;
+      padding: 4px;
+      background-color: var(--bg);
+    }
   </style>
   <title></title>
 </head>
@@ -209,9 +239,33 @@
 <body>
   <!-- % SCRIPT % -->
   <script src="script.js"></script>
-  <div class="content">
+  <div id="bodyContent">
     <!-- % HTML Content % -->
-    <div class="firstCol">
+    <div id="mainCol">
+      <div id="calculator">
+        <table>
+          <caption id="calcCaption"></caption>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="timeRows"></tbody>
+          <tfoot>
+            <tr>
+              <th id="resetDiv"><button id="resetButton" tabindex="-1">↺</button></th>
+              <th></th>
+              <th>Total:</th>
+              <th id="totalDiv"></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <div id="secondaryCol">
       <div id="options">
         <div id="optionsHeader">
           Options
@@ -236,31 +290,24 @@
         <div id="keymapHeader">
           Keymap <span id="keymapinfo">(show / hide with <span class="key">?</span>)</span>
         </div>
-        <div id="keymapContent"></div>
-      </div>
-    </div>
-    <div class="secondCol">
-      <div class="calculator">
-        <table>
-          <caption id="calcCaption"></caption>
-          <thead>
-            <tr>
-              <th></th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Subtotal</th>
-            </tr>
-          </thead>
-          <tbody id="timeRows"></tbody>
-          <tfoot>
-            <tr>
-              <th id="resetDiv"><button id="resetButton" tabindex="-1">↺</button></th>
-              <th></th>
-              <th>Total:</th>
-              <th id="totalDiv"></th>
-            </tr>
-          </tfoot>
-        </table>
+        <div id="keymapContent">
+          <div>
+            <span class="keyCategoryHeader">Table</span>
+          </div>
+          <div class="keyCategoryContent" id="keyCatTable"></div>
+          <div>
+            <span class="keyCategoryHeader">Input</span>
+          </div>
+          <div class="keyCategoryContent" id="keyCatInput"></div>
+          <div>
+            <span class="keyCategoryHeader">Navigation</span>
+          </div>
+          <div class="keyCategoryContent" id="keyCatNavigation"></div>
+          <div>
+            <span class="keyCategoryHeader">Misc</span>
+          </div>
+          <div class="keyCategoryContent" id="keyCatMisc"></div>
+        </div>
       </div>
     </div>
   </div>
