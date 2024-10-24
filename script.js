@@ -275,6 +275,12 @@ function createTimeInputCell(name, idx) {
     const parsedId = parseElementId(input.id, null);
     updateTimeDiff(parsedId.name, parsedId.idx);
     updateTotal();
+
+    const subtotalCell = idGet(`subtotalCell${idx}`);
+    const isNumber = !isNaN(subtotalCell.innerText);
+    if (isNumber && !idGet(`row${parsedId.idx + 1}`)) {
+      addNewTimeRow();
+    }
   };
 
   cell.append(input);
