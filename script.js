@@ -391,6 +391,7 @@ const vimKeymap = {
     desc: "copy all complete rows in TSV format to the system clipboard",
   },
   toggleAdjust: { key: "z", desc: "toggle adjustments" },
+  displayKeymap: { key: "?", desc: "show/hide this keymap" },
 };
 
 class VimActions {
@@ -412,6 +413,7 @@ class VimActions {
     this.yankTotal();
     this.yankTable();
     this.toggleAdjust();
+    this.displayKeymap();
   }
 
   /**
@@ -635,8 +637,21 @@ class VimActions {
   toggleAdjust() {
     document.addEventListener("keydown", (e) => {
       if (e.key == vimKeymap.toggleAdjust.key) {
-        const adjustCheck = idGet("adjustCheck")
+        const adjustCheck = idGet("adjustCheck");
         adjustCheck.click();
+      }
+    });
+  }
+
+  /**
+   * Show/hide the keymap
+   **/
+  displayKeymap() {
+    document.addEventListener("keydown", (e) => {
+      if (e.key == vimKeymap.displayKeymap.key) {
+        const keymapContent = idGet("keymapContent");
+        const visible = keymapContent.style.display;
+        keymapContent.style.display = visible == "none" ? "block" : "none";
       }
     });
   }
