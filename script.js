@@ -117,10 +117,11 @@ function toggleAdjustPerHour() {
 }
 
 /**
- * Toggle the "adjust" class on a subtotal cell by index.
- * @param {!number} idx The index of the subtotal cell
+ * Focus the first row of the table
  **/
-function toggleAdjustClass(idx) {}
+function focusFirstRow() {
+  idGet("startInput1").focus();
+}
 
 // %% Main functionality %%
 
@@ -186,11 +187,12 @@ function updateTotal() {
 /**
  * Reset the HTML timeRows table and the timeRows Object.
  **/
-function reset() {
+function resetTable() {
   idGet("timeRows").replaceChildren([]);
   timeRows = new Map();
   addNewTimeRow();
   updateTotal();
+  focusFirstRow();
 }
 
 /** Renumber the id of each row and its relevant children sequentially from 1.
@@ -240,7 +242,7 @@ function deleteTimeRow(idx) {
   updateTotal();
 
   if (tableRows.children.length == 0) {
-    reset();
+    resetTable();
   } else {
     renumberRows();
   }
@@ -360,6 +362,7 @@ function addNewTimeRow() {
  * @property {VimKey} goLast - Go to the last row
  * @property {VimKey} newRow - Create a new row
  * @property {VimKey} deleteRow - Delete the currently focused row
+ * @property {VimKey} resetTable - Reset the table's content
  * @property {VimKey} clearField - Clear the current input field
  * @property {VimKey} yankTotal - Yank the total to the system clipboard
  * @property {VimKey} yankTable - Yank the total to the system clipboard
@@ -381,6 +384,7 @@ const vimKeymap = {
   middayToggle: { key: "x", desc: "toggle AM/PM" },
   newRow: { key: "o", desc: "create a new row" },
   deleteRow: { key: "d", desc: "delete the current row" },
+  resetTable: { key: "r", desc: "reset the table" },
   clearField: { key: "c", desc: "clear the current input field" },
   yankTotal: {
     key: "y",
@@ -465,6 +469,18 @@ class VimActions {
       const parsedId = parseElementId(currNode.id);
       updateTimeDiff(parsedId.name, parsedId.idx);
       updateTotal();
+    });
+  }
+
+  /**
+   * Reset all content
+   */
+  clear() {
+    document.addEventListener("keydown", (e) => {
+      if (e.key != vimKeymap.resetTable.key) {
+        return;
+      }
+      resetTable();
     });
   }
 
@@ -701,11 +717,14 @@ function onLoad() {
 
   addNewTimeRow();
 
-  // Focus first row on initial page load
-  idGet("startInput1").focus();
+  focusFirstRow();
 
   idGet("adjustCheck").addEventListener("click", (e) => {
     toggleAdjustPerHour(e);
+  });
+
+  idGet("resetButton").addEventListener("click", (e) => {
+    resetTable();
   });
 }
 
