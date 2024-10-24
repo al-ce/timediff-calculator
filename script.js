@@ -311,7 +311,7 @@ function createDeleteCell(idx) {
   button.innerText = "🗑 ";
   button.setAttribute("tabindex", "-1");
   button.addEventListener("click", () => {
-    const parsedId = parseElementId(button);
+    const parsedId = parseElementId(button.id);
     deleteTimeRow(parsedId.idx);
   });
 
