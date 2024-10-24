@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Time difference calculator">
+  <meta name="author" content="Alessandro Ceserani">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title></title>
+</head>
+
+<body>
+  <script src="script.js"></script>
+  <div id="bodyContent">
+    <!-- % HTML Content % -->
+    <div id="mainCol">
+      <div id="calculator">
+        <table>
+          <caption id="calcCaption"></caption>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="timeRows"></tbody>
+          <tfoot>
+            <tr>
+              <th id="resetDiv"><button id="resetButton" tabindex="-1">↺</button></th>
+              <th></th>
+              <th>Total:</th>
+              <th id="totalDiv"></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <div id="secondaryCol">
+      <div id="options">
+        <div id="optionsHeader">
+          Options
+        </div>
+        <div id="optionsContent">
+          <div class="optionsCheckbox">
+            <input type="checkbox" id="adjustCheck" name="adjustCheck" value="adjustCheck"> <label
+              for="adjustCheck">Adjust by <em class="adjustVar">x</em> for every <em class="adjustVar">y</em>
+              hours</label><br>
+          </div>
+          <div class="varInputsContainer">
+            <div class="varInputsRow">
+              where <em class="adjustVar">x</em> = <input type="number" class="varInput" id="adjustVarX">
+            </div>
+            <div class="varInputsRow">
+              and <em class="adjustVar">y</em> = <input type="number" class="varInput" id="adjustVarY">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="keymap">
+        <div id="keymapHeader">
+          Keymap <span id="keymapinfo">(show / hide with <span class="key">?</span>)</span>
+        </div>
+        <div id="keymapContent">
+          <div>
+            <span class="keyCategoryHeader">Table</span>
+          </div>
+          <div class="keyCategoryContent" id="keyCatTable"></div>
+          <div>
+            <span class="keyCategoryHeader">Input</span>
+          </div>
+          <div class="keyCategoryContent" id="keyCatInput"></div>
+          <div>
+            <span class="keyCategoryHeader">Navigation</span>
+          </div>
+          <div class="keyCategoryContent" id="keyCatNavigation"></div>
+          <div>
+            <span class="keyCategoryHeader">Misc</span>
+          </div>
+          <div class="keyCategoryContent" id="keyCatMisc"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
