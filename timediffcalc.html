@@ -106,10 +106,6 @@
       background-color: var(--mistygray);
     }
 
-    .adjusted {
-      font-style: italic;
-    }
-
     .alerts {
       background-color: var(--mistygray);
     }
@@ -169,9 +165,9 @@
       padding-bottom: 8px;
     }
 
-    .breaksVar {
+    .adjustVar {
       font-weight: bolder;
-      color: var(--tigerorange);
+      color: var(--adjustColor);
     }
 
     .varInput {
@@ -197,7 +193,12 @@
       font-family: monospace;
       box-shadow: var(--shadows);
     }
+
+    .adjusted {
+      font-style: italic;
+      font-weight: bold;
     }
+
   </style>
   <title></title>
 </head>
@@ -214,16 +215,16 @@
         </div>
         <div id="optionsContent">
           <div class="optionsCheckbox">
-            <input type="checkbox" id="breaksCheck" name="breaksCheck" value="breaksCheck"> <label
-              for="breaksCheck">Adjust by <em class="breaksVar">x</em> for every <em class="breaksVar">y</em>
+            <input type="checkbox" id="adjustCheck" name="adjustCheck" value="adjustCheck"> <label
+              for="adjustCheck">Adjust by <em class="adjustVar">x</em> for every <em class="adjustVar">y</em>
               hours</label><br>
           </div>
           <div class="varInputsContainer">
             <div class="varInputsRow">
-              where <em class="breaksVar">x</em> = <input type="number" value="-0.5" class="varInput" id="varX">
+              where <em class="adjustVar">x</em> = <input type="number" class="varInput" id="adjustVarX">
             </div>
             <div class="varInputsRow">
-              and <em class="breaksVar">y</em> = <input type="number" value="6" class="varInput" id="varY">
+              and <em class="adjustVar">y</em> = <input type="number" class="varInput" id="adjustVarY">
             </div>
           </div>
         </div>

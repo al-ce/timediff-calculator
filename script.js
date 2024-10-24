@@ -3,6 +3,8 @@ const title = "Time Diff Calculator";
 const defaultSubtotal = "---";
 const defaultTime = "09:00";
 const defaultDate = "2000-01-01";
+const defaultX = -0.5;
+const defaultY = 6;
 
 /**
  * @typedef {Object} State
@@ -102,6 +104,24 @@ function parseElementId(id) {
   return { name, idx };
 }
 
+/**
+ * Toggle the adjust by `adjustVarX` for every `adjustVarY` hours flag and
+ * update all subtotals and the total.
+ **/
+function toggleAdjustPerHour() {
+  state.adjustPerHour = !state.adjustPerHour;
+  timeRows.forEach((v, k, _) => {
+    updateTimeDiff("startInput", k);
+  });
+  updateTotal();
+}
+
+/**
+ * Toggle the "adjust" class on a subtotal cell by index.
+ * @param {!number} idx The index of the subtotal cell
+ **/
+function toggleAdjustClass(idx) {}
+
 // %% Main functionality %%
 
 /**
@@ -114,6 +134,11 @@ function updateTimeDiff(name, idx) {
   const inputElement = idGet(`${name}${idx}`);
   const subtotalCell = idGet(`subtotalCell${idx}`);
   const value = inputElement.value;
+  const x = idGet("adjustVarX").value;
+  const y = idGet("adjustVarY").value;
+
+  // Re-evaluate whether we should set adjusted-style
+  subtotalCell.classList.remove("adjusted");
 
   if (value == "") {
     subtotalCell.innerText = defaultSubtotal;
@@ -127,6 +152,14 @@ function updateTimeDiff(name, idx) {
   // Handle overflows past midnight
   if (timeRow.endInput < timeRow.startInput) {
     timeRow.diff += 24 * 60 * 60 * 1000;
+  }
+
+  const hh = Math.floor(timeRow.diff / 1000 / 60 / 60);
+
+  if (state.adjustPerHour && hh >= y) {
+    const adjustment = Math.floor(hh / y) * x * 1000 * 60 * 60;
+    timeRow.diff += adjustment;
+    subtotalCell.classList.add("adjusted");
   }
 
   let fractionalTime = dateToFraction(timeRow.diff);
@@ -330,7 +363,7 @@ function addNewTimeRow() {
  * @property {VimKey} clearField - Clear the current input field
  * @property {VimKey} yankTotal - Yank the total to the system clipboard
  * @property {VimKey} yankTable - Yank the total to the system clipboard
- * @property {VimKey} adjustToggle - Toggle x for y adjustment
+ * @property {VimKey} toggleAdjust - Toggle x for y adjustment
  */
 
 /** @type {VimKeymap} **/
@@ -357,7 +390,7 @@ const vimKeymap = {
     key: "Y",
     desc: "copy all complete rows in TSV format to the system clipboard",
   },
-  adjustToggle: { key: "a", desc: "toggle adjustments" },
+  toggleAdjust: { key: "z", desc: "toggle adjustments" },
 };
 
 class VimActions {
@@ -378,6 +411,7 @@ class VimActions {
     this.navigate();
     this.yankTotal();
     this.yankTable();
+    this.toggleAdjust();
   }
 
   /**
@@ -576,9 +610,9 @@ class VimActions {
         timeRows.forEach((v, k, _) => {
           startTime = idGet(`startInput${k}`).value;
           endTime = idGet(`endInput${k}`).value;
-          subtotal = dateToFraction(v.diff)
-          data += `${startTime}\t${endTime}\t${subtotal}\n`
-        })
+          subtotal = dateToFraction(v.diff);
+          data += `${startTime}\t${endTime}\t${subtotal}\n`;
+        });
 
         const total = updateTotal();
         data += `\n\t\t${total}`;
@@ -591,6 +625,18 @@ class VimActions {
           .catch((err) => {
             console.error("Error copying text: ", err);
           });
+      }
+    });
+  }
+
+  /**
+   * Toggle the adjustments flag
+   **/
+  toggleAdjust() {
+    document.addEventListener("keydown", (e) => {
+      if (e.key == vimKeymap.toggleAdjust.key) {
+        const adjustCheck = idGet("adjustCheck")
+        adjustCheck.click();
       }
     });
   }
@@ -635,10 +681,17 @@ function onLoad() {
 
   uncheckInputElements();
 
+  idGet("adjustVarX").value = defaultX;
+  idGet("adjustVarY").value = defaultY;
+
   addNewTimeRow();
 
   // Focus first row on initial page load
   idGet("startInput1").focus();
+
+  idGet("adjustCheck").addEventListener("click", (e) => {
+    toggleAdjustPerHour(e);
+  });
 }
 
 document.body.onload = onLoad;
