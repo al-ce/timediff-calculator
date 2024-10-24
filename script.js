@@ -13,7 +13,7 @@ const defaultY = 6;
 
 /** @type {State} */
 const state = {
-  adjustPerHour: false,
+	adjustPerHour: false,
 };
 
 /**
@@ -28,11 +28,11 @@ const state = {
  * @return {TimeRow}
  */
 function createTimeRow() {
-  return {
-    startInput: new Date(`${defaultDate}T${defaultTime}Z`),
-    endInput: new Date(`${defaultDate}T${defaultTime}Z`),
-    diff: 0,
-  };
+	return {
+		startInput: new Date(`${defaultDate}T${defaultTime}Z`),
+		endInput: new Date(`${defaultDate}T${defaultTime}Z`),
+		diff: 0,
+	};
 }
 
 /**
@@ -58,7 +58,7 @@ let timeRows = new Map();
  * @returns {HTMLElement}
  **/
 function idGet(id) {
-  return document.getElementById(id);
+	return document.getElementById(id);
 }
 
 /**
@@ -67,7 +67,7 @@ function idGet(id) {
  * @return {number}
  **/
 function twoPad(num) {
-  return num.toFixed(2);
+	return num.toFixed(2);
 }
 
 /**
@@ -76,20 +76,20 @@ function twoPad(num) {
  * @return {number}
  **/
 function dateToFraction(dateObj) {
-  const mm = Math.floor(dateObj / 1000 / 60) % 60;
-  const hh = Math.floor(dateObj / 1000 / 60 / 60);
-  const fractionalTime = hh + mm / 60;
-  return Math.round(fractionalTime * 100) / 100;
+	const mm = Math.floor(dateObj / 1000 / 60) % 60;
+	const hh = Math.floor(dateObj / 1000 / 60 / 60);
+	const fractionalTime = hh + mm / 60;
+	return Math.round(fractionalTime * 100) / 100;
 }
 
 /**
  * Uncheck all HTML input elements.
  **/
 function uncheckInputElements() {
-  const inputs = document.getElementsByTagName("input");
-  for (let i = 0; i < inputs.length; i++) {
-    inputs[i].checked = false;
-  }
+	const inputs = document.getElementsByTagName("input");
+	for (let i = 0; i < inputs.length; i++) {
+		inputs[i].checked = false;
+	}
 }
 
 /**
@@ -98,10 +98,10 @@ function uncheckInputElements() {
  * @return {ParsedId} name/idx pair parsed from id
  **/
 function parseElementId(id) {
-  const matches = id.match(/([A-Za-z]+)(\d+)/);
-  const name = matches[1];
-  const idx = Number(matches[2]);
-  return { name, idx };
+	const matches = id.match(/([A-Za-z]+)(\d+)/);
+	const name = matches[1];
+	const idx = Number(matches[2]);
+	return { name, idx };
 }
 
 /**
@@ -109,18 +109,18 @@ function parseElementId(id) {
  * update all subtotals and the total.
  **/
 function toggleAdjustPerHour() {
-  state.adjustPerHour = !state.adjustPerHour;
-  timeRows.forEach((v, k, _) => {
-    updateTimeDiff("startInput", k);
-  });
-  updateTotal();
+	state.adjustPerHour = !state.adjustPerHour;
+	timeRows.forEach((v, k, _) => {
+		updateTimeDiff("startInput", k);
+	});
+	updateTotal();
 }
 
 /**
  * Focus the first row of the table
  **/
 function focusFirstRow() {
-  idGet("startInput1").focus();
+	idGet("startInput1").focus();
 }
 
 // %% Main functionality %%
@@ -131,40 +131,40 @@ function focusFirstRow() {
  * @param {number} idx Index to identify the timeRow
  **/
 function updateTimeDiff(name, idx) {
-  const timeRow = timeRows.get(idx);
-  const inputElement = idGet(`${name}${idx}`);
-  const subtotalCell = idGet(`subtotalCell${idx}`);
-  const value = inputElement.value;
-  const x = idGet("adjustVarX").value;
-  const y = idGet("adjustVarY").value;
+	const timeRow = timeRows.get(idx);
+	const inputElement = idGet(`${name}${idx}`);
+	const subtotalCell = idGet(`subtotalCell${idx}`);
+	const value = inputElement.value;
+	const x = idGet("adjustVarX").value;
+	const y = idGet("adjustVarY").value;
 
-  // Re-evaluate whether we should set adjusted-style
-  subtotalCell.classList.remove("adjusted");
+	// Re-evaluate whether we should set adjusted-style
+	subtotalCell.classList.remove("adjusted");
 
-  if (value == "") {
-    subtotalCell.innerText = defaultSubtotal;
-    timeRow.diff = 0;
-    return;
-  }
+	if (value == "") {
+		subtotalCell.innerText = defaultSubtotal;
+		timeRow.diff = 0;
+		return;
+	}
 
-  timeRow[name] = new Date(`${defaultDate}T${inputElement.value}Z`);
-  timeRow.diff = timeRow.endInput - timeRow.startInput;
+	timeRow[name] = new Date(`${defaultDate}T${inputElement.value}Z`);
+	timeRow.diff = timeRow.endInput - timeRow.startInput;
 
-  // Handle overflows past midnight
-  if (timeRow.endInput < timeRow.startInput) {
-    timeRow.diff += 24 * 60 * 60 * 1000;
-  }
+	// Handle overflows past midnight
+	if (timeRow.endInput < timeRow.startInput) {
+		timeRow.diff += 24 * 60 * 60 * 1000;
+	}
 
-  const hh = Math.floor(timeRow.diff / 1000 / 60 / 60);
+	const hh = Math.floor(timeRow.diff / 1000 / 60 / 60);
 
-  if (state.adjustPerHour && hh >= y) {
-    const adjustment = Math.floor(hh / y) * x * 1000 * 60 * 60;
-    timeRow.diff += adjustment;
-    subtotalCell.classList.add("adjusted");
-  }
+	if (state.adjustPerHour && hh >= y) {
+		const adjustment = Math.floor(hh / y) * x * 1000 * 60 * 60;
+		timeRow.diff += adjustment;
+		subtotalCell.classList.add("adjusted");
+	}
 
-  let fractionalTime = dateToFraction(timeRow.diff);
-  subtotalCell.innerText = twoPad(fractionalTime);
+	let fractionalTime = dateToFraction(timeRow.diff);
+	subtotalCell.innerText = twoPad(fractionalTime);
 }
 
 /**
@@ -172,27 +172,27 @@ function updateTimeDiff(name, idx) {
  @return {number} The fractional total
  **/
 function updateTotal() {
-  let total = 0;
-  timeRows.forEach((v, _) => {
-    total += v.diff;
-  });
+	let total = 0;
+	timeRows.forEach((v, _) => {
+		total += v.diff;
+	});
 
-  let fractional = dateToFraction(total);
-  fractional = twoPad(fractional);
+	let fractional = dateToFraction(total);
+	fractional = twoPad(fractional);
 
-  idGet("totalDiv").innerText = fractional;
-  return fractional;
+	idGet("totalDiv").innerText = fractional;
+	return fractional;
 }
 
 /**
  * Reset the HTML timeRows table and the timeRows Object.
  **/
 function resetTable() {
-  idGet("timeRows").replaceChildren([]);
-  timeRows = new Map();
-  addNewTimeRow();
-  updateTotal();
-  focusFirstRow();
+	idGet("timeRows").replaceChildren([]);
+	timeRows = new Map();
+	addNewTimeRow();
+	updateTotal();
+	focusFirstRow();
 }
 
 /** Renumber the id of each row and its relevant children sequentially from 1.
@@ -200,31 +200,31 @@ function resetTable() {
  * Also renumbers the entry keys of the timeRows map.
  **/
 function renumberRows() {
-  const tableRows = idGet("timeRows");
-  let currIdx;
-  let parsedRowId;
-  const toRename = [
-    "deleteCell",
-    "deleteButton",
-    "startCell",
-    "startInput",
-    "endCell",
-    "endInput",
-    "subtotalCell",
-  ];
-  let newIdx = 1;
-  let newTimeRows = new Map();
-  for (let row of tableRows.children) {
-    parsedRowId = parseElementId(row.id);
-    currIdx = parsedRowId.idx;
-    row.id = `row${newIdx}`;
-    toRename.map((name) => {
-      idGet(`${name}${currIdx}`).id = `${name}${newIdx}`;
-    });
-    newTimeRows.set(newIdx, timeRows.get(Number(currIdx)));
-    newIdx++;
-  }
-  timeRows = newTimeRows;
+	const tableRows = idGet("timeRows");
+	let currIdx;
+	let parsedRowId;
+	const toRename = [
+		"deleteCell",
+		"deleteButton",
+		"startCell",
+		"startInput",
+		"endCell",
+		"endInput",
+		"subtotalCell",
+	];
+	let newIdx = 1;
+	let newTimeRows = new Map();
+	for (let row of tableRows.children) {
+		parsedRowId = parseElementId(row.id);
+		currIdx = parsedRowId.idx;
+		row.id = `row${newIdx}`;
+		toRename.map((name) => {
+			idGet(`${name}${currIdx}`).id = `${name}${newIdx}`;
+		});
+		newTimeRows.set(newIdx, timeRows.get(Number(currIdx)));
+		newIdx++;
+	}
+	timeRows = newTimeRows;
 }
 
 /**
@@ -232,25 +232,25 @@ function renumberRows() {
  * @param {number} idx Index to identify the timeRow
  **/
 function deleteTimeRow(idx) {
-  idx = Number(idx);
-  const tableRows = idGet("timeRows");
-  const row = idGet(`row${idx}`);
+	idx = Number(idx);
+	const tableRows = idGet("timeRows");
+	const row = idGet(`row${idx}`);
 
-  row.remove();
-  timeRows.delete(idx);
+	row.remove();
+	timeRows.delete(idx);
 
-  updateTotal();
+	updateTotal();
 
-  if (tableRows.children.length == 0) {
-    resetTable();
-  } else {
-    renumberRows();
-  }
+	if (tableRows.children.length == 0) {
+		resetTable();
+	} else {
+		renumberRows();
+	}
 
-  // Always focus the next available row after deletion
-  const size = timeRows.size;
-  const targetIdx = size < idx + 1 ? size : idx;
-  idGet(`startInput${targetIdx}`).focus();
+	// Always focus the next available row after deletion
+	const size = timeRows.size;
+	const targetIdx = size < idx + 1 ? size : idx;
+	idGet(`startInput${targetIdx}`).focus();
 }
 
 /**
@@ -260,31 +260,31 @@ function deleteTimeRow(idx) {
  * @returns {HTMLTableCellElement}
  **/
 function createTimeInputCell(name, idx) {
-  /** @type {HTMLTableCellElement} */
-  const cell = document.createElement("td");
-  /** @type {HTMLInputElement} */
-  const input = document.createElement("input");
+	/** @type {HTMLTableCellElement} */
+	const cell = document.createElement("td");
+	/** @type {HTMLInputElement} */
+	const input = document.createElement("input");
 
-  cell.id = `${name}Cell${idx}`;
-  input.id = `${name}Input${idx}`;
-  input.type = "time";
-  input.value = "09:00";
-  input.classList.add("timeInput");
+	cell.id = `${name}Cell${idx}`;
+	input.id = `${name}Input${idx}`;
+	input.type = "time";
+	input.value = "09:00";
+	input.classList.add("timeInput");
 
-  input.oninput = function () {
-    const parsedId = parseElementId(input.id, null);
-    updateTimeDiff(parsedId.name, parsedId.idx);
-    updateTotal();
+	input.oninput = function () {
+		const parsedId = parseElementId(input.id, null);
+		updateTimeDiff(parsedId.name, parsedId.idx);
+		updateTotal();
 
-    const subtotalCell = idGet(`subtotalCell${idx}`);
-    const isNumber = !isNaN(subtotalCell.innerText);
-    if (isNumber && !idGet(`row${parsedId.idx + 1}`)) {
-      addNewTimeRow();
-    }
-  };
+		const subtotalCell = idGet(`subtotalCell${idx}`);
+		const isNumber = !isNaN(subtotalCell.innerText);
+		if (isNumber && !idGet(`row${parsedId.idx + 1}`)) {
+			addNewTimeRow();
+		}
+	};
 
-  cell.append(input);
-  return cell;
+	cell.append(input);
+	return cell;
 }
 
 /**
@@ -293,11 +293,11 @@ function createTimeInputCell(name, idx) {
  * @returns {HTMLTableCellElement}
  **/
 function createSubtotalCell(idx) {
-  /** @type {HTMLTableCellElement} */
-  const subtotalCell = document.createElement("td");
-  subtotalCell.id = `subtotalCell${idx}`;
-  subtotalCell.innerText = defaultSubtotal;
-  return subtotalCell;
+	/** @type {HTMLTableCellElement} */
+	const subtotalCell = document.createElement("td");
+	subtotalCell.id = `subtotalCell${idx}`;
+	subtotalCell.innerText = defaultSubtotal;
+	return subtotalCell;
 }
 
 /**
@@ -306,43 +306,43 @@ function createSubtotalCell(idx) {
  * @returns {HTMLTableCellElement}
  **/
 function createDeleteCell(idx) {
-  /** @type {HTMLTableCellElement} */
-  const cell = document.createElement("td");
-  /** @type {HTMLButtonElement} */
-  const button = document.createElement("button");
+	/** @type {HTMLTableCellElement} */
+	const cell = document.createElement("td");
+	/** @type {HTMLButtonElement} */
+	const button = document.createElement("button");
 
-  cell.id = `deleteCell${idx}`;
-  button.id = `deleteButton${idx}`;
-  button.innerText = defaultSubtotal;
-  button.innerText = "🗑 ";
-  button.setAttribute("tabindex", "-1");
-  button.addEventListener("click", () => {
-    const parsedId = parseElementId(button.id);
-    deleteTimeRow(parsedId.idx);
-  });
+	cell.id = `deleteCell${idx}`;
+	button.id = `deleteButton${idx}`;
+	button.innerText = defaultSubtotal;
+	button.innerText = "🗑 ";
+	button.setAttribute("tabindex", "-1");
+	button.addEventListener("click", () => {
+		const parsedId = parseElementId(button.id);
+		deleteTimeRow(parsedId.idx);
+	});
 
-  cell.append(button);
-  return cell;
+	cell.append(button);
+	return cell;
 }
 
 /**
  * Add a new row to the `timeRows` table.
  **/
 function addNewTimeRow() {
-  let idx = timeRows.size + 1;
-  const tableRow = document.createElement("tr");
+	let idx = timeRows.size + 1;
+	const tableRow = document.createElement("tr");
 
-  const deleteCell = createDeleteCell(idx);
-  const startCell = createTimeInputCell("start", idx);
-  const endCell = createTimeInputCell("end", idx);
-  const subtotalCell = createSubtotalCell(idx);
+	const deleteCell = createDeleteCell(idx);
+	const startCell = createTimeInputCell("start", idx);
+	const endCell = createTimeInputCell("end", idx);
+	const subtotalCell = createSubtotalCell(idx);
 
-  tableRow.id = `row${idx}`;
-  tableRow.append(deleteCell, startCell, endCell, subtotalCell);
+	tableRow.id = `row${idx}`;
+	tableRow.append(deleteCell, startCell, endCell, subtotalCell);
 
-  idGet("timeRows").append(tableRow);
+	idGet("timeRows").append(tableRow);
 
-  timeRows.set(idx, createTimeRow());
+	timeRows.set(idx, createTimeRow());
 }
 
 // %% Vim-like bindings %%
@@ -380,321 +380,321 @@ function addNewTimeRow() {
 
 /** @type {VimKeymap} **/
 const vimKeymap = {
-  moveNext: {
-    key: "Enter",
-    display: "⏎",
-    desc: "move to start of next row",
-    cat: "Navigation",
-  },
-  moveDown: { key: "j", desc: "move down a row", cat: "Navigation" },
-  moveUp: { key: "k", desc: "move up a row", cat: "Navigation" },
-  moveLeft: { key: "h", desc: "move left a field", cat: "Navigation" },
-  moveRight: { key: "l", desc: "move right a field", cat: "Navigation" },
-  goFirst: { key: "g", desc: "go to first row", cat: "Navigation" },
-  goLast: { key: "G", desc: "go to last row", cat: "Navigation" },
-  decMin: { key: "J", desc: "decrease by 1 minute", cat: "Input" },
-  incMin: { key: "K", desc: "increase by 1 minute", cat: "Input" },
-  decHour: { key: "H", desc: "decrease by 1 hour", cat: "Input" },
-  incHour: { key: "L", desc: "increase by 1 hour", cat: "Input" },
-  middayToggle: { key: "x", desc: "toggle AM/PM", cat: "Input" },
-  newRow: { key: "n", desc: "create a new row", cat: "Table" },
-  deleteRow: { key: "d", desc: "delete the current row", cat: "Table" },
-  clearField: { key: "c", desc: "clear the current input field", cat: "Table" },
-  resetTable: { key: "r", desc: "reset the table", cat: "Table" },
-  yankTotal: {
-    key: "y",
-    desc: "yank (copy) the total to the system clipboard",
-    cat: "Table",
-  },
-  yankTable: {
-    key: "Y",
-    desc: "copy all complete rows in TSV format to the system clipboard",
-    cat: "Table",
-  },
-  toggleAdjust: { key: "z", desc: "toggle adjustments", cat: "Misc" },
-  displayKeymap: { key: "?", desc: "show/hide this keymap", cat: "Misc" },
+	moveNext: {
+		key: "Enter",
+		display: "⏎",
+		desc: "move to start of next row",
+		cat: "Navigation",
+	},
+	moveDown: { key: "j", desc: "move down a row", cat: "Navigation" },
+	moveUp: { key: "k", desc: "move up a row", cat: "Navigation" },
+	moveLeft: { key: "h", desc: "move left a field", cat: "Navigation" },
+	moveRight: { key: "l", desc: "move right a field", cat: "Navigation" },
+	goFirst: { key: "g", desc: "go to first row", cat: "Navigation" },
+	goLast: { key: "G", desc: "go to last row", cat: "Navigation" },
+	decMin: { key: "J", desc: "decrease by 1 minute", cat: "Input" },
+	incMin: { key: "K", desc: "increase by 1 minute", cat: "Input" },
+	decHour: { key: "H", desc: "decrease by 1 hour", cat: "Input" },
+	incHour: { key: "L", desc: "increase by 1 hour", cat: "Input" },
+	middayToggle: { key: "x", desc: "toggle AM/PM", cat: "Input" },
+	newRow: { key: "n", desc: "create a new row", cat: "Table" },
+	deleteRow: { key: "d", desc: "delete the current row", cat: "Table" },
+	clearField: { key: "c", desc: "clear the current input field", cat: "Table" },
+	resetTable: { key: "r", desc: "reset the table", cat: "Table" },
+	yankTotal: {
+		key: "y",
+		desc: "yank (copy) the total to the system clipboard",
+		cat: "Table",
+	},
+	yankTable: {
+		key: "Y",
+		desc: "copy all complete rows in TSV format to the system clipboard",
+		cat: "Table",
+	},
+	toggleAdjust: { key: "z", desc: "toggle adjustments", cat: "Misc" },
+	displayKeymap: { key: "?", desc: "show/hide this keymap", cat: "Misc" },
 };
 
 class VimActions {
-  /**
-   * Create object for adding Vim like keybinds for the page
-   * @class
-   */
-  constructor() {}
+	/**
+	 * Create object for adding Vim like keybinds for the page
+	 * @class
+	 */
+	constructor() {}
 
-  /**
-   * Set keybinds
-   */
-  keymapSet() {
-    this.newRow();
-    this.deleteRow();
-    this.clear();
-    this.adjustTime();
-    this.navigate();
-    this.yankTotal();
-    this.yankTable();
-    this.toggleAdjust();
-    this.displayKeymap();
-  }
+	/**
+	 * Set keybinds
+	 */
+	keymapSet() {
+		this.newRow();
+		this.deleteRow();
+		this.clear();
+		this.adjustTime();
+		this.navigate();
+		this.yankTotal();
+		this.yankTable();
+		this.toggleAdjust();
+		this.displayKeymap();
+	}
 
-  /**
-   * Create a new timeRow
-   */
-  newRow() {
-    const key = vimKeymap.newRow.key;
-    document.addEventListener("keydown", (e) => {
-      if (e.key == key) {
-        addNewTimeRow();
-      }
-    });
-  }
+	/**
+	 * Create a new timeRow
+	 */
+	newRow() {
+		const key = vimKeymap.newRow.key;
+		document.addEventListener("keydown", (e) => {
+			if (e.key == key) {
+				addNewTimeRow();
+			}
+		});
+	}
 
-  /**
-   * Delete a time row
-   */
-  deleteRow() {
-    document.addEventListener("keydown", (e) => {
-      if (e.key != vimKeymap.deleteRow.key) {
-        return;
-      }
-      const currEl = document.activeElement.parentNode.parentNode;
-      try {
-        const parsedId = parseElementId(currEl.id);
-        const idx = parsedId.idx;
-        const row = idGet(`row${idx}`);
-        if (row !== undefined) {
-          deleteTimeRow(idx);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    });
-  }
+	/**
+	 * Delete a time row
+	 */
+	deleteRow() {
+		document.addEventListener("keydown", (e) => {
+			if (e.key != vimKeymap.deleteRow.key) {
+				return;
+			}
+			const currEl = document.activeElement.parentNode.parentNode;
+			try {
+				const parsedId = parseElementId(currEl.id);
+				const idx = parsedId.idx;
+				const row = idGet(`row${idx}`);
+				if (row !== undefined) {
+					deleteTimeRow(idx);
+				}
+			} catch (err) {
+				console.log(err);
+			}
+		});
+	}
 
-  /**
-   * Clear the focused input field
-   */
-  clear() {
-    document.addEventListener("keydown", (e) => {
-      if (e.key != vimKeymap.clearField.key) {
-        return;
-      }
-      const currNode = document.activeElement;
-      currNode.value = "";
-      currNode.blur();
-      currNode.focus();
-      const parsedId = parseElementId(currNode.id);
-      updateTimeDiff(parsedId.name, parsedId.idx);
-      updateTotal();
-    });
-  }
+	/**
+	 * Clear the focused input field
+	 */
+	clear() {
+		document.addEventListener("keydown", (e) => {
+			if (e.key != vimKeymap.clearField.key) {
+				return;
+			}
+			const currNode = document.activeElement;
+			currNode.value = "";
+			currNode.blur();
+			currNode.focus();
+			const parsedId = parseElementId(currNode.id);
+			updateTimeDiff(parsedId.name, parsedId.idx);
+			updateTotal();
+		});
+	}
 
-  /**
-   * Reset all content
-   */
-  clear() {
-    document.addEventListener("keydown", (e) => {
-      if (e.key != vimKeymap.resetTable.key) {
-        return;
-      }
-      resetTable();
-    });
-  }
+	/**
+	 * Reset all content
+	 */
+	clear() {
+		document.addEventListener("keydown", (e) => {
+			if (e.key != vimKeymap.resetTable.key) {
+				return;
+			}
+			resetTable();
+		});
+	}
 
-  /**
-   * Adjust time minutes or hours by 1 unit, and toggle AM/PM
-   */
-  adjustTime() {
-    document.addEventListener("keydown", (e) => {
-      const adjustKeys = [
-        vimKeymap.decHour.key,
-        vimKeymap.decMin.key,
-        vimKeymap.incMin.key,
-        vimKeymap.incHour.key,
-        vimKeymap.middayToggle.key,
-      ];
-      if (e.altKey || !adjustKeys.includes(e.key)) {
-        return;
-      }
+	/**
+	 * Adjust time minutes or hours by 1 unit, and toggle AM/PM
+	 */
+	adjustTime() {
+		document.addEventListener("keydown", (e) => {
+			const adjustKeys = [
+				vimKeymap.decHour.key,
+				vimKeymap.decMin.key,
+				vimKeymap.incMin.key,
+				vimKeymap.incHour.key,
+				vimKeymap.middayToggle.key,
+			];
+			if (e.altKey || !adjustKeys.includes(e.key)) {
+				return;
+			}
 
-      let currNode = document.activeElement;
-      if (!currNode || !currNode.classList.contains("timeInput")) {
-        return;
-      }
+			let currNode = document.activeElement;
+			if (!currNode || !currNode.classList.contains("timeInput")) {
+				return;
+			}
 
-      switch (e.key) {
-        case vimKeymap.decHour.key:
-          currNode.stepDown(60);
-          break;
-        case vimKeymap.decMin.key:
-          currNode.stepDown(1);
-          break;
-        case vimKeymap.incMin.key:
-          currNode.stepUp(1);
-          break;
-        case vimKeymap.incHour.key:
-          currNode.stepUp(60);
-          break;
-        case vimKeymap.middayToggle.key:
-          const hh = currNode.value.match(/(\d+)/)[1];
-          let step = Number(hh) < 12 ? 720 : -720;
-          currNode.stepUp(step);
-          break;
-      }
+			switch (e.key) {
+				case vimKeymap.decHour.key:
+					currNode.stepDown(60);
+					break;
+				case vimKeymap.decMin.key:
+					currNode.stepDown(1);
+					break;
+				case vimKeymap.incMin.key:
+					currNode.stepUp(1);
+					break;
+				case vimKeymap.incHour.key:
+					currNode.stepUp(60);
+					break;
+				case vimKeymap.middayToggle.key:
+					const hh = currNode.value.match(/(\d+)/)[1];
+					let step = Number(hh) < 12 ? 720 : -720;
+					currNode.stepUp(step);
+					break;
+			}
 
-      const event = new Event("input");
-      currNode.dispatchEvent(event);
-    });
-  }
+			const event = new Event("input");
+			currNode.dispatchEvent(event);
+		});
+	}
 
-  /**
-   * Navigate to next, previous, first, or last row, or move to next/prev field
-   */
-  navigate() {
-    // Navigation
-    document.addEventListener("keydown", (e) => {
-      const navKeys = [
-        vimKeymap.moveNext.key,
-        vimKeymap.moveLeft.key,
-        vimKeymap.moveDown.key,
-        vimKeymap.moveUp.key,
-        vimKeymap.moveRight.key,
-        vimKeymap.goFirst.key,
-        vimKeymap.goLast.key,
-      ];
+	/**
+	 * Navigate to next, previous, first, or last row, or move to next/prev field
+	 */
+	navigate() {
+		// Navigation
+		document.addEventListener("keydown", (e) => {
+			const navKeys = [
+				vimKeymap.moveNext.key,
+				vimKeymap.moveLeft.key,
+				vimKeymap.moveDown.key,
+				vimKeymap.moveUp.key,
+				vimKeymap.moveRight.key,
+				vimKeymap.goFirst.key,
+				vimKeymap.goLast.key,
+			];
 
-      if (!navKeys.includes(e.key)) {
-        return;
-      }
+			if (!navKeys.includes(e.key)) {
+				return;
+			}
 
-      const startType = "startInput";
-      const endType = "endInput";
+			const startType = "startInput";
+			const endType = "endInput";
 
-      let currNode = document.activeElement;
+			let currNode = document.activeElement;
 
-      if (!currNode || !currNode.classList.contains("timeInput")) {
-        currNode = idGet(`startInput1`);
-      }
+			if (!currNode || !currNode.classList.contains("timeInput")) {
+				currNode = idGet(`startInput1`);
+			}
 
-      const matches = currNode.id.match(/([A-Za-z]+)(\d+)/);
-      let type = matches[1];
-      let rowIdx = Number(matches[2]);
+			const matches = currNode.id.match(/([A-Za-z]+)(\d+)/);
+			let type = matches[1];
+			let rowIdx = Number(matches[2]);
 
-      const currRow = idGet(`row${rowIdx}`);
-      let siblingRow;
-      if (e.key == vimKeymap.moveUp.key) {
-        siblingRow = currRow.previousSibling;
-      } else if (
-        e.key == vimKeymap.moveDown.key ||
-        e.key == vimKeymap.moveNext.key
-      ) {
-        siblingRow = currRow.nextSibling;
-      }
-      if (siblingRow) {
-        rowIdx = siblingRow.id.match(/row(\d+)/)[1];
-      }
+			const currRow = idGet(`row${rowIdx}`);
+			let siblingRow;
+			if (e.key == vimKeymap.moveUp.key) {
+				siblingRow = currRow.previousSibling;
+			} else if (
+				e.key == vimKeymap.moveDown.key ||
+				e.key == vimKeymap.moveNext.key
+			) {
+				siblingRow = currRow.nextSibling;
+			}
+			if (siblingRow) {
+				rowIdx = siblingRow.id.match(/row(\d+)/)[1];
+			}
 
-      switch (e.key) {
-        case vimKeymap.moveNext.key:
-          type = startType;
-          break;
-        case vimKeymap.moveLeft.key:
-          type = startType;
-          break;
-        case vimKeymap.moveDown.key:
-          break;
-        case vimKeymap.moveUp.key:
-          break;
-        case vimKeymap.moveRight.key:
-          type = endType;
-          break;
-        case vimKeymap.goFirst.key:
-          rowIdx = 1;
-          type = startType;
-          break;
-        case vimKeymap.goLast.key:
-          rowIdx = timeRows.size;
-          type = startType;
-          break;
-      }
+			switch (e.key) {
+				case vimKeymap.moveNext.key:
+					type = startType;
+					break;
+				case vimKeymap.moveLeft.key:
+					type = startType;
+					break;
+				case vimKeymap.moveDown.key:
+					break;
+				case vimKeymap.moveUp.key:
+					break;
+				case vimKeymap.moveRight.key:
+					type = endType;
+					break;
+				case vimKeymap.goFirst.key:
+					rowIdx = 1;
+					type = startType;
+					break;
+				case vimKeymap.goLast.key:
+					rowIdx = timeRows.size;
+					type = startType;
+					break;
+			}
 
-      idGet(`${type}${rowIdx}`).focus();
-    });
-  }
+			idGet(`${type}${rowIdx}`).focus();
+		});
+	}
 
-  /**
-   * Yank total to the system clipboard.
-   */
-  yankTotal() {
-    document.addEventListener("keydown", (e) => {
-      if (e.key == vimKeymap.yankTotal.key) {
-        const total = updateTotal();
-        navigator.clipboard
-          .writeText(total)
-          .then(() => {
-            console.log("Copy success:", total);
-          })
-          .catch((err) => {
-            console.error("Error copying text: ", err);
-          });
-      }
-    });
-  }
+	/**
+	 * Yank total to the system clipboard.
+	 */
+	yankTotal() {
+		document.addEventListener("keydown", (e) => {
+			if (e.key == vimKeymap.yankTotal.key) {
+				const total = updateTotal();
+				navigator.clipboard
+					.writeText(total)
+					.then(() => {
+						console.log("Copy success:", total);
+					})
+					.catch((err) => {
+						console.error("Error copying text: ", err);
+					});
+			}
+		});
+	}
 
-  /**
-   * Yank all completed rows as a TSV to the system clipboard.
-   **/
-  yankTable() {
-    document.addEventListener("keydown", (e) => {
-      if (e.key == vimKeymap.yankTable.key) {
-        let data = "";
-        let startTime, endTime, subtotal;
-        timeRows.forEach((v, k, _) => {
-          startTime = idGet(`startInput${k}`).value;
-          endTime = idGet(`endInput${k}`).value;
-          subtotal = dateToFraction(v.diff);
-          data += `${startTime}\t${endTime}\t${subtotal}\n`;
-        });
+	/**
+	 * Yank all completed rows as a TSV to the system clipboard.
+	 **/
+	yankTable() {
+		document.addEventListener("keydown", (e) => {
+			if (e.key == vimKeymap.yankTable.key) {
+				let data = "";
+				let startTime, endTime, subtotal;
+				timeRows.forEach((v, k, _) => {
+					startTime = idGet(`startInput${k}`).value;
+					endTime = idGet(`endInput${k}`).value;
+					subtotal = dateToFraction(v.diff);
+					data += `${startTime}\t${endTime}\t${subtotal}\n`;
+				});
 
-        const total = updateTotal();
-        data += `\n\t\t${total}`;
+				const total = updateTotal();
+				data += `\n\t\t${total}`;
 
-        navigator.clipboard
-          .writeText(data)
-          .then(() => {
-            console.log("Copy success:\n\n", data);
-          })
-          .catch((err) => {
-            console.error("Error copying text: ", err);
-          });
-      }
-    });
-  }
+				navigator.clipboard
+					.writeText(data)
+					.then(() => {
+						console.log("Copy success:\n\n", data);
+					})
+					.catch((err) => {
+						console.error("Error copying text: ", err);
+					});
+			}
+		});
+	}
 
-  /**
-   * Toggle the adjustments flag
-   **/
-  toggleAdjust() {
-    document.addEventListener("keydown", (e) => {
-      if (e.key == vimKeymap.toggleAdjust.key) {
-        const adjustCheck = idGet("adjustCheck");
-        adjustCheck.click();
-      }
-    });
-  }
+	/**
+	 * Toggle the adjustments flag
+	 **/
+	toggleAdjust() {
+		document.addEventListener("keydown", (e) => {
+			if (e.key == vimKeymap.toggleAdjust.key) {
+				const adjustCheck = idGet("adjustCheck");
+				adjustCheck.click();
+			}
+		});
+	}
 
-  /**
-   * Show/hide the keymap
-   **/
-  displayKeymap() {
-    document.addEventListener("keydown", (e) => {
-      if (e.key == vimKeymap.displayKeymap.key) {
-        const keymapContent = idGet("keymapContent");
-        const visible = keymapContent.style.display;
-        keymapContent.style.display = visible == "block" ? "none" : "block";
-      }
-    });
-  }
+	/**
+	 * Show/hide the keymap
+	 **/
+	displayKeymap() {
+		document.addEventListener("keydown", (e) => {
+			if (e.key == vimKeymap.displayKeymap.key) {
+				const keymapContent = idGet("keymapContent");
+				const visible = keymapContent.style.display;
+				keymapContent.style.display = visible == "block" ? "none" : "block";
+			}
+		});
+	}
 }
 
 // %% Set HTML %%
@@ -703,53 +703,53 @@ class VimActions {
   Set the HTML content of the keymap guide
   */
 function setKeymapContent() {
-  for (const [action, vimKey] of Object.entries(vimKeymap)) {
-    const entry = document.createElement("div");
-    const keyIcon = document.createElement("span");
-    const description = document.createElement("span");
+	for (const [action, vimKey] of Object.entries(vimKeymap)) {
+		const entry = document.createElement("div");
+		const keyIcon = document.createElement("span");
+		const description = document.createElement("span");
 
-    entry.id = `vim${action.charAt(0).toUpperCase()}${action.slice(1)}`;
+		entry.id = `vim${action.charAt(0).toUpperCase()}${action.slice(1)}`;
 
-    keyIcon.innerText = vimKey.display == null ? vimKey.key : vimKey.display;
-    keyIcon.className = "key";
+		keyIcon.innerText = vimKey.display == null ? vimKey.key : vimKey.display;
+		keyIcon.className = "key";
 
-    description.innerText = vimKey.desc;
+		description.innerText = vimKey.desc;
 
-    entry.append(keyIcon, description);
-    entry.className = "keymapEntry";
+		entry.append(keyIcon, description);
+		entry.className = "keymapEntry";
 
-    idGet(`keyCat${vimKey.cat}`).append(entry);
+		idGet(`keyCat${vimKey.cat}`).append(entry);
 
-    // keymapContent.append(entry);
-  }
+		// keymapContent.append(entry);
+	}
 }
 
 // %% On Load %%
 document.title = title;
 
 function onLoad() {
-  const vim = new VimActions();
-  vim.keymapSet();
-  setKeymapContent();
+	const vim = new VimActions();
+	vim.keymapSet();
+	setKeymapContent();
 
-  idGet("calcCaption").innerText = title;
+	idGet("calcCaption").innerText = title;
 
-  uncheckInputElements();
+	uncheckInputElements();
 
-  idGet("adjustVarX").value = defaultX;
-  idGet("adjustVarY").value = defaultY;
+	idGet("adjustVarX").value = defaultX;
+	idGet("adjustVarY").value = defaultY;
 
-  addNewTimeRow();
+	addNewTimeRow();
 
-  focusFirstRow();
+	focusFirstRow();
 
-  idGet("adjustCheck").addEventListener("click", (e) => {
-    toggleAdjustPerHour(e);
-  });
+	idGet("adjustCheck").addEventListener("click", (e) => {
+		toggleAdjustPerHour(e);
+	});
 
-  idGet("resetButton").addEventListener("click", (e) => {
-    resetTable();
-  });
+	idGet("resetButton").addEventListener("click", () => {
+		resetTable();
+	});
 }
 
 document.body.onload = onLoad;
