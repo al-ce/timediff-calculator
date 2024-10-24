@@ -397,10 +397,10 @@ const vimKeymap = {
   decHour: { key: "H", desc: "decrease by 1 hour", cat: "Input" },
   incHour: { key: "L", desc: "increase by 1 hour", cat: "Input" },
   middayToggle: { key: "x", desc: "toggle AM/PM", cat: "Input" },
-  newRow: { key: "o", desc: "create a new row", cat: "Table" },
+  newRow: { key: "n", desc: "create a new row", cat: "Table" },
   deleteRow: { key: "d", desc: "delete the current row", cat: "Table" },
-  resetTable: { key: "r", desc: "reset the table", cat: "Table" },
   clearField: { key: "c", desc: "clear the current input field", cat: "Table" },
+  resetTable: { key: "r", desc: "reset the table", cat: "Table" },
   yankTotal: {
     key: "y",
     desc: "yank (copy) the total to the system clipboard",
