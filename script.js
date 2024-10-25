@@ -123,6 +123,15 @@ function focusFirstRow() {
 	idGet("startInput1").focus();
 }
 
+/**
+ * Show/hide keymap content
+ **/
+function toggleKeymapVisibility() {
+	const keymapContent = idGet("keymapContent");
+	const visible = keymapContent.style.display;
+	keymapContent.style.display = visible == "block" ? "none" : "block";
+}
+
 // %% Main functionality %%
 
 /**
@@ -689,9 +698,7 @@ class VimActions {
 	displayKeymap() {
 		document.addEventListener("keydown", (e) => {
 			if (e.key == vimKeymap.displayKeymap.key) {
-				const keymapContent = idGet("keymapContent");
-				const visible = keymapContent.style.display;
-				keymapContent.style.display = visible == "block" ? "none" : "block";
+				toggleKeymapVisibility();
 			}
 		});
 	}
@@ -700,8 +707,8 @@ class VimActions {
 // %% Set HTML %%
 
 /**
-  Set the HTML content of the keymap guide
-  */
+	Set the HTML content of the keymap guide
+	*/
 function setKeymapContent() {
 	for (const [action, vimKey] of Object.entries(vimKeymap)) {
 		const entry = document.createElement("div");
@@ -742,6 +749,10 @@ function onLoad() {
 	addNewTimeRow();
 
 	focusFirstRow();
+
+	idGet("keymapHeader").addEventListener("click", (e) => {
+		toggleKeymapVisibility();
+	});
 
 	idGet("adjustCheck").addEventListener("click", (e) => {
 		toggleAdjustPerHour(e);

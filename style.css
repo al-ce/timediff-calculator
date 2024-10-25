@@ -144,6 +144,11 @@ tbody tr:nth-child(even) {
 	font-weight: bold;
 }
 
+#keymapHeader {
+	cursor: pointer;
+	user-select: none;
+}
+
 #keymapinfo {
 	font-size: x-small;
 }
