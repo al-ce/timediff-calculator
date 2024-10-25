@@ -387,320 +387,338 @@ function addNewTimeRow() {
  * @property {VimKey} toggleAdjust - Toggle x for y adjustment
  */
 
-/** @type {VimKeymap} **/
-const vimKeymap = {
-	moveNext: {
-		key: "Enter",
-		display: "⏎",
-		desc: "move to start of next row",
-		cat: "Navigation",
-	},
-	moveDown: { key: "j", desc: "move down a row", cat: "Navigation" },
-	moveUp: { key: "k", desc: "move up a row", cat: "Navigation" },
-	moveLeft: { key: "h", desc: "move left a field", cat: "Navigation" },
-	moveRight: { key: "l", desc: "move right a field", cat: "Navigation" },
-	goFirst: { key: "g", desc: "go to first row", cat: "Navigation" },
-	goLast: { key: "G", desc: "go to last row", cat: "Navigation" },
-	decMin: { key: "J", desc: "decrease by 1 minute", cat: "Input" },
-	incMin: { key: "K", desc: "increase by 1 minute", cat: "Input" },
-	decHour: { key: "H", desc: "decrease by 1 hour", cat: "Input" },
-	incHour: { key: "L", desc: "increase by 1 hour", cat: "Input" },
-	middayToggle: { key: "x", desc: "toggle AM/PM", cat: "Input" },
-	newRow: { key: "n", desc: "create a new row", cat: "Table" },
-	deleteRow: { key: "d", desc: "delete the current row", cat: "Table" },
-	clearField: { key: "c", desc: "clear the current input field", cat: "Table" },
-	resetTable: { key: "r", desc: "reset the table", cat: "Table" },
-	yankTotal: {
-		key: "y",
-		desc: "yank (copy) the total to the system clipboard",
-		cat: "Table",
-	},
-	yankTable: {
-		key: "Y",
-		desc: "copy all complete rows in TSV format to the system clipboard",
-		cat: "Table",
-	},
-	toggleAdjust: { key: "z", desc: "toggle adjustments", cat: "Misc" },
-	displayKeymap: { key: "?", desc: "show/hide this keymap", cat: "Misc" },
-};
-
 class VimActions {
 	/**
 	 * Create object for adding Vim like keybinds for the page
 	 * @class
 	 */
-	constructor() {}
+	constructor() {
+		/** @type {VimKeymap} **/
+		this.keymap = {
+			moveNext: {
+				key: "Enter",
+				display: "⏎",
+				desc: "move to start of next row",
+				cat: "Navigation",
+
+				action: this.navigate,
+			},
+			moveDown: {
+				key: "j",
+				desc: "move down a row",
+				cat: "Navigation",
+				action: this.navigate,
+			},
+			moveUp: {
+				key: "k",
+				desc: "move up a row",
+				cat: "Navigation",
+				action: this.navigate,
+			},
+			moveLeft: {
+				key: "h",
+				desc: "move left a field",
+				cat: "Navigation",
+				action: this.navigate,
+			},
+			moveRight: {
+				key: "l",
+				desc: "move right a field",
+				cat: "Navigation",
+				action: this.navigate,
+			},
+			goFirst: {
+				key: "g",
+				desc: "go to first row",
+				cat: "Navigation",
+				action: this.navigate,
+			},
+			goLast: {
+				key: "G",
+				desc: "go to last row",
+				cat: "Navigation",
+				action: this.navigate,
+			},
+			decMin: {
+				key: "J",
+				desc: "decrease by 1 minute",
+				cat: "Input",
+				action: this.adjustTime,
+			},
+			incMin: {
+				key: "K",
+				desc: "increase by 1 minute",
+				cat: "Input",
+				action: this.adjustTime,
+			},
+			decHour: {
+				key: "H",
+				desc: "decrease by 1 hour",
+				cat: "Input",
+				action: this.adjustTime,
+			},
+			incHour: {
+				key: "L",
+				desc: "increase by 1 hour",
+				cat: "Input",
+				action: this.adjustTime,
+			},
+			middayToggle: {
+				key: "x",
+				desc: "toggle AM/PM",
+				cat: "Input",
+				action: this.adjustTime,
+			},
+			newRow: {
+				key: "n",
+				desc: "create a new row",
+				cat: "Table",
+				action: this.newRow,
+			},
+			deleteRow: {
+				key: "d",
+				desc: "delete the current row",
+				cat: "Table",
+				action: this.deleteRow,
+			},
+			clearField: {
+				key: "c",
+				desc: "clear the current input field",
+				cat: "Table",
+				action: this.clear,
+			},
+			resetTable: {
+				key: "r",
+				desc: "reset the table",
+				cat: "Table",
+				action: this.reset,
+			},
+			yankTotal: {
+				key: "y",
+				desc: "yank (copy) the total to the system clipboard",
+				cat: "Table",
+				action: this.yankTotal,
+			},
+			yankTable: {
+				key: "Y",
+				desc: "copy all complete rows in TSV format to the system clipboard",
+				cat: "Table",
+				action: this.yankTable,
+			},
+			toggleAdjust: {
+				key: "z",
+				desc: "toggle adjustments",
+				cat: "Misc",
+				action: this.toggleAdjust,
+			},
+			displayKeymap: {
+				key: "?",
+				desc: "show/hide this keymap",
+				cat: "Misc",
+				action: this.displayKeymap,
+			},
+		};
+	}
 
 	/**
 	 * Set keybinds
 	 */
 	keymapSet() {
-		this.newRow();
-		this.deleteRow();
-		this.clear();
-		this.adjustTime();
-		this.navigate();
-		this.yankTotal();
-		this.yankTable();
-		this.toggleAdjust();
-		this.displayKeymap();
+		for (const [_, v] of Object.entries(this.keymap)) {
+			document.addEventListener("keydown", (e) => {
+				if (e.key == v.key) {
+					v.action(e, this.keymap);
+				}
+			});
+		}
 	}
 
 	/**
 	 * Create a new timeRow
 	 */
 	newRow() {
-		const key = vimKeymap.newRow.key;
-		document.addEventListener("keydown", (e) => {
-			if (e.key == key) {
-				addNewTimeRow();
-			}
-		});
+		addNewTimeRow();
 	}
 
 	/**
 	 * Delete a time row
 	 */
 	deleteRow() {
-		document.addEventListener("keydown", (e) => {
-			if (e.key != vimKeymap.deleteRow.key) {
-				return;
+		const currEl = document.activeElement.parentNode.parentNode;
+		try {
+			const parsedId = parseElementId(currEl.id);
+			const idx = parsedId.idx;
+			const row = idGet(`row${idx}`);
+			if (row !== undefined) {
+				deleteTimeRow(idx);
 			}
-			const currEl = document.activeElement.parentNode.parentNode;
-			try {
-				const parsedId = parseElementId(currEl.id);
-				const idx = parsedId.idx;
-				const row = idGet(`row${idx}`);
-				if (row !== undefined) {
-					deleteTimeRow(idx);
-				}
-			} catch (err) {
-				console.log(err);
-			}
-		});
+		} catch (err) {
+			console.log(err);
+		}
 	}
 
 	/**
 	 * Clear the focused input field
 	 */
 	clear() {
-		document.addEventListener("keydown", (e) => {
-			if (e.key != vimKeymap.clearField.key) {
-				return;
-			}
-			const currNode = document.activeElement;
-			currNode.value = "";
-			currNode.blur();
-			currNode.focus();
-			const parsedId = parseElementId(currNode.id);
-			updateTimeDiff(parsedId.name, parsedId.idx);
-			updateTotal();
-		});
+		const currNode = document.activeElement;
+		currNode.value = "";
+		currNode.blur();
+		currNode.focus();
+		const parsedId = parseElementId(currNode.id);
+		updateTimeDiff(parsedId.name, parsedId.idx);
+		updateTotal();
 	}
 
 	/**
 	 * Reset all content
 	 */
-	clear() {
-		document.addEventListener("keydown", (e) => {
-			if (e.key != vimKeymap.resetTable.key) {
-				return;
-			}
-			resetTable();
-		});
+	reset() {
+		resetTable();
 	}
 
 	/**
 	 * Adjust time minutes or hours by 1 unit, and toggle AM/PM
 	 */
-	adjustTime() {
-		document.addEventListener("keydown", (e) => {
-			const adjustKeys = [
-				vimKeymap.decHour.key,
-				vimKeymap.decMin.key,
-				vimKeymap.incMin.key,
-				vimKeymap.incHour.key,
-				vimKeymap.middayToggle.key,
-			];
-			if (e.altKey || !adjustKeys.includes(e.key)) {
-				return;
-			}
+	adjustTime(e, keymap) {
+		let currNode = document.activeElement;
+		if (!currNode || !currNode.classList.contains("timeInput")) {
+			return;
+		}
 
-			let currNode = document.activeElement;
-			if (!currNode || !currNode.classList.contains("timeInput")) {
-				return;
-			}
+		switch (e.key) {
+			case keymap.decHour.key:
+				currNode.stepDown(60);
+				break;
+			case keymap.decMin.key:
+				currNode.stepDown(1);
+				break;
+			case keymap.incMin.key:
+				currNode.stepUp(1);
+				break;
+			case keymap.incHour.key:
+				currNode.stepUp(60);
+				break;
+			case keymap.middayToggle.key:
+				const hh = currNode.value.match(/(\d+)/)[1];
+				let step = Number(hh) < 12 ? 720 : -720;
+				currNode.stepUp(step);
+				break;
+		}
 
-			switch (e.key) {
-				case vimKeymap.decHour.key:
-					currNode.stepDown(60);
-					break;
-				case vimKeymap.decMin.key:
-					currNode.stepDown(1);
-					break;
-				case vimKeymap.incMin.key:
-					currNode.stepUp(1);
-					break;
-				case vimKeymap.incHour.key:
-					currNode.stepUp(60);
-					break;
-				case vimKeymap.middayToggle.key:
-					const hh = currNode.value.match(/(\d+)/)[1];
-					let step = Number(hh) < 12 ? 720 : -720;
-					currNode.stepUp(step);
-					break;
-			}
-
-			const event = new Event("input");
-			currNode.dispatchEvent(event);
-		});
+		const event = new Event("input");
+		currNode.dispatchEvent(event);
 	}
 
 	/**
 	 * Navigate to next, previous, first, or last row, or move to next/prev field
 	 */
-	navigate() {
-		// Navigation
-		document.addEventListener("keydown", (e) => {
-			const navKeys = [
-				vimKeymap.moveNext.key,
-				vimKeymap.moveLeft.key,
-				vimKeymap.moveDown.key,
-				vimKeymap.moveUp.key,
-				vimKeymap.moveRight.key,
-				vimKeymap.goFirst.key,
-				vimKeymap.goLast.key,
-			];
+	navigate(e, keymap) {
+		const startType = "startInput";
+		const endType = "endInput";
 
-			if (!navKeys.includes(e.key)) {
-				return;
-			}
+		let currNode = document.activeElement;
 
-			const startType = "startInput";
-			const endType = "endInput";
+		if (!currNode || !currNode.classList.contains("timeInput")) {
+			currNode = idGet(`startInput1`);
+		}
 
-			let currNode = document.activeElement;
+		const matches = currNode.id.match(/([A-Za-z]+)(\d+)/);
+		let type = matches[1];
+		let rowIdx = Number(matches[2]);
 
-			if (!currNode || !currNode.classList.contains("timeInput")) {
-				currNode = idGet(`startInput1`);
-			}
+		const currRow = idGet(`row${rowIdx}`);
+		let siblingRow;
+		if (e.key == keymap.moveUp.key) {
+			siblingRow = currRow.previousSibling;
+		} else if (e.key == keymap.moveDown.key || e.key == keymap.moveNext.key) {
+			siblingRow = currRow.nextSibling;
+		}
+		if (siblingRow) {
+			rowIdx = siblingRow.id.match(/row(\d+)/)[1];
+		}
 
-			const matches = currNode.id.match(/([A-Za-z]+)(\d+)/);
-			let type = matches[1];
-			let rowIdx = Number(matches[2]);
+		switch (e.key) {
+			case keymap.moveNext.key:
+				type = startType;
+				break;
+			case keymap.moveLeft.key:
+				type = startType;
+				break;
+			case keymap.moveDown.key:
+				break;
+			case keymap.moveUp.key:
+				break;
+			case keymap.moveRight.key:
+				type = endType;
+				break;
+			case keymap.goFirst.key:
+				rowIdx = 1;
+				type = startType;
+				break;
+			case keymap.goLast.key:
+				rowIdx = timeRows.size;
+				type = startType;
+				break;
+		}
 
-			const currRow = idGet(`row${rowIdx}`);
-			let siblingRow;
-			if (e.key == vimKeymap.moveUp.key) {
-				siblingRow = currRow.previousSibling;
-			} else if (
-				e.key == vimKeymap.moveDown.key ||
-				e.key == vimKeymap.moveNext.key
-			) {
-				siblingRow = currRow.nextSibling;
-			}
-			if (siblingRow) {
-				rowIdx = siblingRow.id.match(/row(\d+)/)[1];
-			}
-
-			switch (e.key) {
-				case vimKeymap.moveNext.key:
-					type = startType;
-					break;
-				case vimKeymap.moveLeft.key:
-					type = startType;
-					break;
-				case vimKeymap.moveDown.key:
-					break;
-				case vimKeymap.moveUp.key:
-					break;
-				case vimKeymap.moveRight.key:
-					type = endType;
-					break;
-				case vimKeymap.goFirst.key:
-					rowIdx = 1;
-					type = startType;
-					break;
-				case vimKeymap.goLast.key:
-					rowIdx = timeRows.size;
-					type = startType;
-					break;
-			}
-
-			idGet(`${type}${rowIdx}`).focus();
-		});
+		idGet(`${type}${rowIdx}`).focus();
 	}
 
 	/**
 	 * Yank total to the system clipboard.
 	 */
 	yankTotal() {
-		document.addEventListener("keydown", (e) => {
-			if (e.key == vimKeymap.yankTotal.key) {
-				const total = updateTotal();
-				navigator.clipboard
-					.writeText(total)
-					.then(() => {
-						console.log("Copy success:", total);
-					})
-					.catch((err) => {
-						console.error("Error copying text: ", err);
-					});
-			}
-		});
+		const total = updateTotal();
+		navigator.clipboard
+			.writeText(total)
+			.then(() => {
+				console.log("Copy success:", total);
+			})
+			.catch((err) => {
+				console.error("Error copying text: ", err);
+			});
 	}
 
 	/**
 	 * Yank all completed rows as a TSV to the system clipboard.
 	 **/
 	yankTable() {
-		document.addEventListener("keydown", (e) => {
-			if (e.key == vimKeymap.yankTable.key) {
-				let data = "";
-				let startTime, endTime, subtotal;
-				timeRows.forEach((v, k, _) => {
-					startTime = idGet(`startInput${k}`).value;
-					endTime = idGet(`endInput${k}`).value;
-					subtotal = dateToFraction(v.diff);
-					data += `${startTime}\t${endTime}\t${subtotal}\n`;
-				});
-
-				const total = updateTotal();
-				data += `\n\t\t${total}`;
-
-				navigator.clipboard
-					.writeText(data)
-					.then(() => {
-						console.log("Copy success:\n\n", data);
-					})
-					.catch((err) => {
-						console.error("Error copying text: ", err);
-					});
-			}
+		let data = "";
+		let startTime, endTime, subtotal;
+		timeRows.forEach((v, k, _) => {
+			startTime = idGet(`startInput${k}`).value;
+			endTime = idGet(`endInput${k}`).value;
+			subtotal = dateToFraction(v.diff);
+			data += `${startTime}\t${endTime}\t${subtotal}\n`;
 		});
+
+		const total = updateTotal();
+		data += `\n\t\t${total}`;
+
+		navigator.clipboard
+			.writeText(data)
+			.then(() => {
+				console.log("Copy success:\n\n", data);
+			})
+			.catch((err) => {
+				console.error("Error copying text: ", err);
+			});
 	}
 
 	/**
 	 * Toggle the adjustments flag
 	 **/
 	toggleAdjust() {
-		document.addEventListener("keydown", (e) => {
-			if (e.key == vimKeymap.toggleAdjust.key) {
-				const adjustCheck = idGet("adjustCheck");
-				adjustCheck.click();
-			}
-		});
+		const adjustCheck = idGet("adjustCheck");
+		adjustCheck.click();
 	}
 
 	/**
 	 * Show/hide the keymap
 	 **/
 	displayKeymap() {
-		document.addEventListener("keydown", (e) => {
-			if (e.key == vimKeymap.displayKeymap.key) {
-				toggleKeymapVisibility();
-			}
-		});
+		toggleKeymapVisibility();
 	}
 }
 
@@ -709,8 +727,8 @@ class VimActions {
 /**
 	Set the HTML content of the keymap guide
 	*/
-function setKeymapContent() {
-	for (const [action, vimKey] of Object.entries(vimKeymap)) {
+function setKeymapContent(vim) {
+	for (const [action, vimKey] of Object.entries(vim.keymap)) {
 		const entry = document.createElement("div");
 		const keyIcon = document.createElement("span");
 		const description = document.createElement("span");
@@ -737,7 +755,7 @@ document.title = title;
 function onLoad() {
 	const vim = new VimActions();
 	vim.keymapSet();
-	setKeymapContent();
+	setKeymapContent(vim);
 
 	idGet("calcCaption").innerText = title;
 
