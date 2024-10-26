@@ -9,12 +9,22 @@ const defaultY = 6;
 /**
  * @typedef {Object} State
  * @property {boolean} adjustPerHour - Adjust calculations by x per y hours
+ * @property {string} focusedId - The id of the currently or previously focused calculator row
  */
 
 /** @type {State} */
-const state = {
-	adjustPerHour: false,
-};
+let state = {};
+
+/**
+ * Set default `state` object
+ * @return {State}
+ */
+function setDefaultState() {
+	state = {
+		adjustPerHour: false,
+		focusedId: "startInput1",
+	};
+}
 
 /**
  * @typedef {Object} TimeRow
@@ -110,7 +120,7 @@ function parseElementId(id) {
  **/
 function toggleAdjustPerHour() {
 	state.adjustPerHour = !state.adjustPerHour;
-	timeRows.forEach((v, k, _) => {
+	timeRows.forEach((_, k) => {
 		updateTimeDiff("startInput", k);
 	});
 	updateTotal();
@@ -202,6 +212,7 @@ function resetTable() {
 	addNewTimeRow();
 	updateTotal();
 	focusFirstRow();
+	setDefaultState();
 }
 
 /** Renumber the id of each row and its relevant children sequentially from 1.
@@ -259,7 +270,9 @@ function deleteTimeRow(idx) {
 	// Always focus the next available row after deletion
 	const size = timeRows.size;
 	const targetIdx = size < idx + 1 ? size : idx;
-	idGet(`startInput${targetIdx}`).focus();
+	const targetId = `startInput${targetIdx}`;
+	idGet(targetId).focus();
+	state.focusedId = targetId;
 }
 
 /**
@@ -290,6 +303,10 @@ function createTimeInputCell(name, idx) {
 		if (isNumber && !idGet(`row${parsedId.idx + 1}`)) {
 			addNewTimeRow();
 		}
+	};
+
+	input.onfocus = function () {
+		state.focusedId = input.id;
 	};
 
 	cell.append(input);
@@ -521,15 +538,48 @@ class VimActions {
 	}
 
 	/**
-	 * Set keybinds
+	 * Set actions for keypresses as specified in Vim.keymap
 	 */
-	keymapSet() {
-		for (const [_, v] of Object.entries(this.keymap)) {
+	setKeybinds() {
+		for (const [_, vimKey] of Object.entries(this.keymap)) {
 			document.addEventListener("keydown", (e) => {
-				if (e.key == v.key) {
-					v.action(e, this.keymap);
+				if (e.key == vimKey.key) {
+					vimKey.action(e, this.keymap);
 				}
 			});
+		}
+	}
+
+	/**
+	Set the HTML content of the keymap guide
+	*/
+	setKeymapContent() {
+		for (const [actionName, vimKey] of Object.entries(this.keymap)) {
+			const entry = document.createElement("div");
+			const keyIcon = document.createElement("span");
+			const description = document.createElement("span");
+
+			entry.id = `vim${actionName.charAt(0).toUpperCase()}${actionName.slice(1)}`;
+
+			keyIcon.innerText = vimKey.display == null ? vimKey.key : vimKey.display;
+			keyIcon.className = "key";
+
+			// Clicking on a key icon performs its action
+			const mocked_event = { key: vimKey.key };
+			const keymap = this.keymap;
+			keyIcon.addEventListener("mousedown", () => {
+				keyIcon.onmouseup = function () {
+					vimKey.action(mocked_event, keymap);
+					idGet(state.focusedId).focus();
+				};
+			});
+
+			description.innerText = vimKey.desc;
+
+			entry.append(keyIcon, description);
+			entry.className = "keymapEntry";
+
+			idGet(`keyCat${vimKey.cat}`).append(entry);
 		}
 	}
 
@@ -544,9 +594,8 @@ class VimActions {
 	 * Delete a time row
 	 */
 	deleteRow() {
-		const currEl = document.activeElement.parentNode.parentNode;
 		try {
-			const parsedId = parseElementId(currEl.id);
+			const parsedId = parseElementId(state.focusedId);
 			const idx = parsedId.idx;
 			const row = idGet(`row${idx}`);
 			if (row !== undefined) {
@@ -561,11 +610,11 @@ class VimActions {
 	 * Clear the focused input field
 	 */
 	clear() {
-		const currNode = document.activeElement;
-		currNode.value = "";
-		currNode.blur();
-		currNode.focus();
-		const parsedId = parseElementId(currNode.id);
+		const focusedInput = idGet(state.focusedId);
+		focusedInput.value = "";
+		focusedInput.blur();
+		focusedInput.focus();
+		const parsedId = parseElementId(focusedInput.id);
 		updateTimeDiff(parsedId.name, parsedId.idx);
 		updateTotal();
 	}
@@ -581,33 +630,30 @@ class VimActions {
 	 * Adjust time minutes or hours by 1 unit, and toggle AM/PM
 	 */
 	adjustTime(e, keymap) {
-		let currNode = document.activeElement;
-		if (!currNode || !currNode.classList.contains("timeInput")) {
-			return;
-		}
+		const focusedInput = idGet(state.focusedId);
 
 		switch (e.key) {
 			case keymap.decHour.key:
-				currNode.stepDown(60);
+				focusedInput.stepDown(60);
 				break;
 			case keymap.decMin.key:
-				currNode.stepDown(1);
+				focusedInput.stepDown(1);
 				break;
 			case keymap.incMin.key:
-				currNode.stepUp(1);
+				focusedInput.stepUp(1);
 				break;
 			case keymap.incHour.key:
-				currNode.stepUp(60);
+				focusedInput.stepUp(60);
 				break;
 			case keymap.middayToggle.key:
-				const hh = currNode.value.match(/(\d+)/)[1];
+				const hh = focusedInput.value.match(/(\d+)/)[1];
 				let step = Number(hh) < 12 ? 720 : -720;
-				currNode.stepUp(step);
+				focusedInput.stepUp(step);
 				break;
 		}
 
 		const event = new Event("input");
-		currNode.dispatchEvent(event);
+		focusedInput.dispatchEvent(event);
 	}
 
 	/**
@@ -617,25 +663,16 @@ class VimActions {
 		const startType = "startInput";
 		const endType = "endInput";
 
-		let currNode = document.activeElement;
+		let focusedInput = idGet(state.focusedId);
 
-		if (!currNode || !currNode.classList.contains("timeInput")) {
-			currNode = idGet(`startInput1`);
-		}
-
-		const matches = currNode.id.match(/([A-Za-z]+)(\d+)/);
+		const matches = focusedInput.id.match(/([A-Za-z]+)(\d+)/);
 		let type = matches[1];
 		let rowIdx = Number(matches[2]);
 
-		const currRow = idGet(`row${rowIdx}`);
-		let siblingRow;
 		if (e.key == keymap.moveUp.key) {
-			siblingRow = currRow.previousSibling;
+			rowIdx = Math.max(1, rowIdx - 1);
 		} else if (e.key == keymap.moveDown.key || e.key == keymap.moveNext.key) {
-			siblingRow = currRow.nextSibling;
-		}
-		if (siblingRow) {
-			rowIdx = siblingRow.id.match(/row(\d+)/)[1];
+			rowIdx = Math.min(timeRows.size, rowIdx + 1);
 		}
 
 		switch (e.key) {
@@ -662,7 +699,8 @@ class VimActions {
 				break;
 		}
 
-		idGet(`${type}${rowIdx}`).focus();
+		const targetId = `${type}${rowIdx}`;
+		idGet(targetId).focus();
 	}
 
 	/**
@@ -722,63 +760,33 @@ class VimActions {
 	}
 }
 
-// %% Set HTML %%
-
-/**
-	Set the HTML content of the keymap guide
-	*/
-function setKeymapContent(vim) {
-	for (const [action, vimKey] of Object.entries(vim.keymap)) {
-		const entry = document.createElement("div");
-		const keyIcon = document.createElement("span");
-		const description = document.createElement("span");
-
-		entry.id = `vim${action.charAt(0).toUpperCase()}${action.slice(1)}`;
-
-		keyIcon.innerText = vimKey.display == null ? vimKey.key : vimKey.display;
-		keyIcon.className = "key";
-
-		description.innerText = vimKey.desc;
-
-		entry.append(keyIcon, description);
-		entry.className = "keymapEntry";
-
-		idGet(`keyCat${vimKey.cat}`).append(entry);
-
-		// keymapContent.append(entry);
-	}
-}
-
 // %% On Load %%
 document.title = title;
 
 function onLoad() {
-	const vim = new VimActions();
-	vim.keymapSet();
-	setKeymapContent(vim);
-
+	// Apply constants
 	idGet("calcCaption").innerText = title;
-
-	uncheckInputElements();
-
 	idGet("adjustVarX").value = defaultX;
 	idGet("adjustVarY").value = defaultY;
 
-	addNewTimeRow();
+	// Set to defaults
+	resetTable();
 
-	focusFirstRow();
-
-	idGet("keymapHeader").addEventListener("click", (e) => {
+	// Set click actions
+	idGet("keymapHeader").addEventListener("click", () => {
 		toggleKeymapVisibility();
 	});
-
 	idGet("adjustCheck").addEventListener("click", (e) => {
 		toggleAdjustPerHour(e);
 	});
-
 	idGet("resetButton").addEventListener("click", () => {
 		resetTable();
 	});
+
+	// Set vim actions
+	const vim = new VimActions();
+	vim.setKeybinds();
+	vim.setKeymapContent();
 }
 
 document.body.onload = onLoad;
