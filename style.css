@@ -222,3 +222,13 @@ tbody tr:nth-child(even) {
 	padding: 4px;
 	background-color: var(--bg);
 }
+
+#notifications {
+	font-style: italic;
+	padding: 20px;
+}
+
+.fade-out {
+	opacity: 0;
+	transition: opacity 1s ease-out;
+}

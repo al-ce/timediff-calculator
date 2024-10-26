@@ -23,6 +23,7 @@ function setDefaultState() {
 	state = {
 		adjustPerHour: false,
 		focusedId: "startInput1",
+		fadingNotif: false,
 	};
 }
 
@@ -140,6 +141,23 @@ function toggleKeymapVisibility() {
 	const keymapContent = idGet("keymapContent");
 	const visible = keymapContent.style.display;
 	keymapContent.style.display = visible == "block" ? "none" : "block";
+}
+
+/**
+ * Set or reset fade for notification div
+ **/
+function setNotificationFade() {
+	setTimeout(() => {
+		state.fadingNotif = true;
+		notifications.classList.add("fade-out");
+		setTimeout(() => {
+			if (!state.fadingNotif) {
+				notifications.classList.remove("fade-out");
+				notifications.innerHTML = "";
+				state.fadingNotif = false;
+			}
+		}, 2500);
+	}, 2500);
 }
 
 // %% Main functionality %%
@@ -712,6 +730,10 @@ class VimActions {
 			.writeText(total)
 			.then(() => {
 				console.log("Copy success:", total);
+				const notifications = idGet("notifications");
+				notifications.classList.remove("fade-out");
+				notifications.innerHTML = `Copied total (${total}) to clipboard!`;
+				setNotificationFade();
 			})
 			.catch((err) => {
 				console.error("Error copying text: ", err);
@@ -738,6 +760,10 @@ class VimActions {
 			.writeText(data)
 			.then(() => {
 				console.log("Copy success:\n\n", data);
+				const notifications = idGet("notifications");
+				notifications.classList.remove("fade-out");
+				notifications.innerHTML = `Copied all rows to clipboard in TSV format!`;
+				setNotificationFade();
 			})
 			.catch((err) => {
 				console.error("Error copying text: ", err);
