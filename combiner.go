@@ -53,6 +53,8 @@ func main() {
 	indexFile, err := os.Open(indexFilename)
 	check(err)
 
+	defer indexFile.Close()
+
 	fileScanner := bufio.NewScanner(indexFile)
 	fileScanner.Split(bufio.ScanLines)
 
