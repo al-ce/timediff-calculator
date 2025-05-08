@@ -25,4 +25,4 @@ Pressing `Y` copies the table in a TSV format to the system clipboard. Here is t
 
 A single page version is available for convenient offline use.
 
-The combination process is automated using the `combiner` binary included in the repository. The source code is in [combiner.go](combiner.go). The combiner program assumes the presence of an `./index.html`, `./script.js`, and `./style.css`, and writes the combined content to `./singlepage.html`.
+The combination process is automated using `combiner` program built with golang included in the repository. The source code is in [combiner.go](combiner.go). The combiner program assumes the presence of an `./index.html`, `./script.js`, and `./style.css`, and writes the combined content to `./singlepage.html`.
